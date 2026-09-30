@@ -9,7 +9,7 @@ Su objetivo es obtener el **menor resultado verificable que avance el problema**
 ## Cómo funciona
 
 ```mermaid
-flowchart LR
+flowchart TB
     U[Petición y contexto] --> M[Elegir modo]
     M --> O[Actor, outcome y efecto permitido]
     O --> A[Elegir la siguiente acción]
@@ -67,7 +67,7 @@ Esperado: [...]. Observado: [...]. Se permite editar y ejecutar pruebas locales.
 No se permiten escrituras en sistemas externos. Reproduce primero y verifica la corrección.
 ```
 
-Para un mock, separa candidato y facilitador. No entregues al candidato el paquete completo: contiene oracles. La [guía de uso](docs/GUIA_DE_USO.md#simulación-y-evaluación) explica la exportación y el aislamiento necesario.
+Para un mock, separa candidato y facilitador. No entregues al candidato el paquete completo: contiene oracles. La [guía de uso](docs/GUIA_DE_USO.md#7-simulación-y-evaluación) explica la exportación y el aislamiento necesario.
 
 ## Qué evidencia hay
 
