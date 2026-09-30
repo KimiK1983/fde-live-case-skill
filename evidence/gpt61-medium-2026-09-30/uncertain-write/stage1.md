@@ -1,0 +1,5 @@
+- **Estado:** `unknown`, pendiente de reconciliación. Según `case.md`, el POST agotó timeout y el GET devolvió `503`; ninguno confirma si se creó el ticket.
+- **Siguiente acción:** detener las escrituras y conservar `operation_id=op-73` e `Idempotency-Key=key-73`. Generar otra clave y repetir podría duplicar el efecto; el comentario del operador no concede autorización.
+- **Handoff:** entregar al responsable de la integración los identificadores, el timeout, el `503` y la garantía de idempotencia pendiente. Debe verificar el resultado en la fuente autoritativa. Un reintento requiere confirmar que no se aplicó, comprobar que sea seguro y contar con autorización, conservando la misma clave para la misma intención.
+
+Solo consulté archivos locales. No ejecuté llamadas externas ni modifiqué archivos.

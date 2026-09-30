@@ -1,0 +1,12 @@
+{
+  "date": "2026-09-30",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "cli": "codex 0.159.2",
+  "sandbox_requested": "read-only",
+  "technical_oracle_isolation_verified": false,
+  "earlier_cli_rejection": {
+    "cli": "codex 0.155.0",
+    "status": "HTTP 400; no model response; N/O by environment"
+  }
+}

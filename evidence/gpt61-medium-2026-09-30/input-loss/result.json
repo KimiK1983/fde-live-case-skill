@@ -1,0 +1,9 @@
+{
+  "status": "ok",
+  "exit_code": 0,
+  "seconds": 118.19,
+  "session": "<SESSION>",
+  "answer_length": 935,
+  "tool_events": 8,
+  "instruction_version": "817f6d2a1934ed2bed2b942add1baf6690855bc4e6255d4d1850b91c8c9fcf87"
+}

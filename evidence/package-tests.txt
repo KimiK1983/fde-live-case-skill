@@ -1,0 +1,53 @@
+Command: python -X utf8 -B fde-live-case-skill/scripts/test_preflight.py -v
+
+test_docker_cli_failure_short_circuits_checks (__main__.MainTests.test_docker_cli_failure_short_circuits_checks) ... ok
+test_docker_daemon_failure_short_circuits_checks (__main__.MainTests.test_docker_daemon_failure_short_circuits_checks) ... ok
+test_docker_default_never_contacts_daemon (__main__.MainTests.test_docker_default_never_contacts_daemon) ... ok
+test_docker_ps_counts_active_containers (__main__.MainTests.test_docker_ps_counts_active_containers) ... ok
+test_docker_ps_empty (__main__.MainTests.test_docker_ps_empty) ... ok
+test_docker_ps_failure_is_warning (__main__.MainTests.test_docker_ps_failure_is_warning) ... ok
+test_git_clean_uses_selected_project (__main__.MainTests.test_git_clean_uses_selected_project) ... ok
+test_git_cli_failure_short_circuits_inspection (__main__.MainTests.test_git_cli_failure_short_circuits_inspection) ... ok
+test_git_default_does_not_enter_project (__main__.MainTests.test_git_default_does_not_enter_project) ... ok
+test_git_dirty_counts_entries (__main__.MainTests.test_git_dirty_counts_entries) ... ok
+test_git_inspection_reports_hidden_untracked_and_staged_gitlink (__main__.MainTests.test_git_inspection_reports_hidden_untracked_and_staged_gitlink) ... ok
+test_git_non_repository_is_warning (__main__.MainTests.test_git_non_repository_is_warning) ... ok
+test_invalid_project_returns_two (__main__.MainTests.test_invalid_project_returns_two) ... ok
+test_legacy_compose_uses_resolved_executable (__main__.MainTests.test_legacy_compose_uses_resolved_executable) ... ok
+test_optional_tools_are_info_not_warnings (__main__.MainTests.test_optional_tools_are_info_not_warnings) ... ok
+test_project_is_required (__main__.MainTests.test_project_is_required) ... ok
+test_warnings_are_informational (__main__.MainTests.test_warnings_are_informational) ... ok
+test_adversarial_practice_fixtures_are_pinned (__main__.PackageTests.test_adversarial_practice_fixtures_are_pinned) ... ok
+test_candidate_briefs_do_not_expose_facilitator_controls (__main__.PackageTests.test_candidate_briefs_do_not_expose_facilitator_controls) ... ok
+test_candidate_export_preserves_instructions_without_private_files (__main__.PackageTests.test_candidate_export_preserves_instructions_without_private_files) ... ok
+test_candidate_export_rejects_missing_source_and_in_place_output (__main__.PackageTests.test_candidate_export_rejects_missing_source_and_in_place_output) ... ok
+test_candidate_export_rejects_private_brief (__main__.PackageTests.test_candidate_export_rejects_private_brief) ... ok
+test_canonical_transport_rejects_extra_keys (__main__.PackageTests.test_canonical_transport_rejects_extra_keys) ... ok
+test_causal_and_oracle_barriers_are_explicit (__main__.PackageTests.test_causal_and_oracle_barriers_are_explicit) ... ok
+test_documentation_has_no_absolute_or_traversal_paths (__main__.PackageTests.test_documentation_has_no_absolute_or_traversal_paths) ... ok
+test_documentation_size_limits (__main__.PackageTests.test_documentation_size_limits) ... ok
+test_every_refund_policy_reference_is_defined (__main__.PackageTests.test_every_refund_policy_reference_is_defined) ... ok
+test_every_variant_has_a_post_change_golden (__main__.PackageTests.test_every_variant_has_a_post_change_golden) ... ok
+test_field_cases_have_visible_briefs_and_private_changes (__main__.PackageTests.test_field_cases_have_visible_briefs_and_private_changes) ... ok
+test_generated_artifacts_are_not_distribution_sources (__main__.PackageTests.test_generated_artifacts_are_not_distribution_sources) ... ok
+test_invalid_yaml_is_rejected (__main__.PackageTests.test_invalid_yaml_is_rejected) ... ok
+test_live_input_precedence_is_explicit (__main__.PackageTests.test_live_input_precedence_is_explicit) ... ok
+test_markdown_links_and_anchors_resolve (__main__.PackageTests.test_markdown_links_and_anchors_resolve) ... ok
+test_optional_repository_launcher_matches_thin_contract (__main__.PackageTests.test_optional_repository_launcher_matches_thin_contract) ... ok
+test_pack6_approval_binding_is_complete (__main__.PackageTests.test_pack6_approval_binding_is_complete) ... ok
+test_package_manifest_is_exact (__main__.PackageTests.test_package_manifest_is_exact) ... ok
+test_paths_must_remain_inside_skill_root (__main__.PackageTests.test_paths_must_remain_inside_skill_root) ... ok
+test_practice_has_exact_canonical_transports (__main__.PackageTests.test_practice_has_exact_canonical_transports) ... ok
+test_skill_frontmatter_and_openai_interface_yaml (__main__.PackageTests.test_skill_frontmatter_and_openai_interface_yaml) ... ok
+test_specialized_pass_and_capstone_score_are_separate (__main__.PackageTests.test_specialized_pass_and_capstone_score_are_separate) ... ok
+test_clean_git_env_removes_only_git_variables (__main__.RunTests.test_clean_git_env_removes_only_git_variables) ... ok
+test_failure_returns_stderr (__main__.RunTests.test_failure_returns_stderr) ... ok
+test_invalid_bytes_are_replaced (__main__.RunTests.test_invalid_bytes_are_replaced) ... ok
+test_node_version_checks_do_not_execute_inherited_preloads (__main__.RunTests.test_node_version_checks_do_not_execute_inherited_preloads) ... ok
+test_success_preserves_stderr (__main__.RunTests.test_success_preserves_stderr) ... ok
+test_timeout_returns_failure (__main__.RunTests.test_timeout_returns_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 46 tests in 4.397s
+
+OK

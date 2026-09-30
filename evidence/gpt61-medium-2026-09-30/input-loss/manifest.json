@@ -1,0 +1,13 @@
+{
+  "format": 1,
+  "instruction_version": "817f6d2a1934ed2bed2b942add1baf6690855bc4e6255d4d1850b91c8c9fcf87",
+  "files": {
+    "SKILL.md": "16ecac60ccee27e0dc07acc445ff846b2060ab32114671dde1b155d10dd9e3e7",
+    "references/LIVE_CASE.md": "fa8abbfe7742cbc791b2b01b6ca6f868d21689ad02f094bcc012c27120f7e389",
+    "references/DECOMPOSITION.md": "1742893ca958450b6faa85e76623f0ea55c5ea6409081d5c083989b58a120a09",
+    "references/AGENTIC.md": "4f1cfa285503d18f29beff015d1ed7f0b9709580c6ea522e61713041322cf751",
+    "case.md": "0536c76b7affc5112f3de376b01ce576fcf1ed577d01c6f5bb9492204dca938f"
+  },
+  "isolation_verified": false,
+  "semantic_review_required": true
+}

@@ -1,0 +1,2 @@
+# Preserve instruction and evidence hashes across Windows and Unix checkouts.
+* -text
