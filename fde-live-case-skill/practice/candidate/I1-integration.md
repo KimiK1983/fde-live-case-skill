@@ -1,13 +1,13 @@
-# I1 · Ticketing empresarial con resultado incierto
+# I1 · Enterprise ticketing with uncertain results
 
-**Tiempo:** 60 minutos. **Tu rol:** FDE integrando una API ITSM ajena. No hay credenciales ni red al proveedor; modela el boundary con un fake local y pruebas reproducibles. No se autoriza cambiar scopes ni escribir en producción.
+**Time:** 60 minutes. **Your role:** FDE integrating a third-party ITSM API. No credentials or network access to the provider; model the boundary with a local fake and reproducible tests. No scope changes or production writes are authorized.
 
-El flujo crea un ticket cuando un operador confirma un incidente. `POST /tickets` acepta `operation_id` y `Idempotency-Key`. En sandbox, un POST puede agotar el tiempo de espera **después** de que el servidor haya creado el ticket. `GET /operations/{operation_id}` devuelve `applied`, `not_found` o error. La documentación del cliente no garantiza que los permisos del service principal de producción coincidan con los de sandbox.
+The flow creates a ticket when an operator confirms an incident. `POST /tickets` accepts `operation_id` and `Idempotency-Key`. In sandbox, POST may time out **after** the server creates the ticket. `GET /operations/{operation_id}` returns `applied`, `not_found`, or error. Client documentation does not guarantee the production service principal has sandbox-equivalent permissions.
 
-**Contrato del fake acordado para este ejercicio, no garantía de un proveedor real:**
+**Agreed fake contract for this exercise, not a real provider guarantee:**
 
-- `operation_id` y `Idempotency-Key` identifican una misma intención dentro de un tenant y la acción de crear ticket. Permanecen estables durante toda la ronda, incluidos reinicios del cliente. El fake conserva el registro durante toda la ronda; fuera de ese horizonte no hay garantía declarada.
-- Para la misma intención y payload, solicitudes repetidas o concurrentes producen como máximo un ticket y devuelven su resultado registrado. Reutilizar una clave con otro payload se rechaza sin otro efecto. El mecanismo interno es una decisión técnica del candidato.
-- GET=`applied` confirma creación y devuelve el identificador del ticket. GET=`not_found` es, **en este fake**, una ausencia autoritativa: el intento anterior terminó sin efecto y no queda trabajo pendiente capaz de aplicarlo después. Un error, timeout o respuesta no interpretable no ofrece esa garantía. Los permisos reales siguen sin confirmar.
+- `operation_id` and `Idempotency-Key` identify the same intent within a tenant and ticket-creation action. They remain stable throughout the round, including client restarts. The fake retains its record throughout the round; no guarantee is declared beyond that horizon.
+- Repeated or concurrent requests with the same intent and payload produce at most one ticket and return its recorded result. Reusing a key with another payload is rejected without another effect. Internal mechanism is the candidate's technical decision.
+- GET=`applied` confirms creation and returns ticket ID. GET=`not_found` is, **in this fake**, authoritative absence: the previous attempt ended without effect and no pending work can apply it later. Error, timeout, or uninterpretable response supplies no such guarantee. Real permissions remain unconfirmed.
 
-Diseña e implementa el mínimo flujo que no duplique tickets cuando el resultado es incierto. Muestra un caso feliz, un timeout tras aplicar y el fallo prioritario. Separa lo probado localmente de lo que aún requeriría validación con IT/proveedor. Si cambia una restricción durante la sesión, ajusta la estrategia y el handoff.
+Design and implement the minimum flow avoiding duplicate tickets when results are uncertain. Show happy path, timeout after application, and priority failure. Separate local proof from pending IT/provider validation. If a restriction changes, adjust strategy and handoff.

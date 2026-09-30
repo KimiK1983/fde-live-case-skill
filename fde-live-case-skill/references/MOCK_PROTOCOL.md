@@ -1,31 +1,31 @@
-# Protocolo de mock
+# Mock protocol
 
-Usar este archivo solo en la tarea de facilitador/evaluador. La tarea del candidato recibe la ficha visible y las instrucciones técnicas de candidato de la versión evaluada, no este archivo, `PRACTICE.md` ni `FIELD_PRACTICE.md`. La selección y el cambio de rol siguen [SKILL.md](../SKILL.md); no mezclar candidato y facilitador/evaluador en una tarea. Los gates siguientes son propios del mock y no gobiernan entrevistas reales ni peticiones de autoría.
+Use only in the facilitator/evaluator task. The candidate receives the visible brief and the evaluated version's technical candidate instructions, not this file, `PRACTICE.md`, or `FIELD_PRACTICE.md`. Role selection and changes follow [SKILL.md](../SKILL.md); do not mix candidate and facilitator/evaluator in one task. These mock-specific gates do not govern real interviews or authoring requests.
 
-## Entrega de la ficha y aislamiento
+## Brief delivery and isolation
 
-El facilitador elige un caso, entrega solo su ficha como material del ejercicio y guarda el cambio y el oracle. Las instrucciones de método se entregan mediante la [vista de candidato](MEASUREMENT.md#vista-de-candidato-para-comparar-versiones). Los seis packs de `PRACTICE.md` mezclan fichas y respuestas: sirven para práctica conocida, no son holdouts ciegos. En los casos de `FIELD_PRACTICE.md`, copiar el archivo de `practice/candidate/` elegido a un **workspace o host aislado sin acceso** al paquete, al repositorio del facilitador ni al oracle. En ese holdout no invocar la instalación completa de esta skill: también contiene la guía del facilitador. No confundir exportar una vista con aislar el entorno; comprobar también herramientas, historial y acceso a la instalación global. Dos tareas del mismo agente con acceso al mismo filesystem reducen contaminación accidental, pero no constituyen aislamiento ciego. Si no se puede aislar, etiquetar la ronda como práctica abierta, no como transferencia ciega.
+The facilitator chooses a case, delivers only its brief as exercise material, and retains change and oracle. Method instructions are delivered through the [candidate view](MEASUREMENT.md#candidate-view-for-version-comparison). The six `PRACTICE.md` packs mix briefs and answers: known practice, not blind holdouts. For `FIELD_PRACTICE.md` cases, copy the chosen `practice/candidate/` file to an **isolated workspace or host without access** to the package, facilitator repository, or oracle. Do not invoke the full skill installation in that holdout: it contains facilitator guidance too. Exporting a view is not environment isolation; also check tools, history, and global installation access. Two tasks with the same filesystem reduce accidental contamination but do not provide blind isolation. If isolation is impossible, label open practice, not blind transfer.
 
-## Checkpoint `MINUTO 30`
+## `MINUTO 30` checkpoint
 
-En el dominio del facilitador, desbloquear el cambio solo cuando la primera línea no vacía y de nivel superior, fuera de citas y fences, sea exactamente `MINUTO 30`, exista un caso activo y su cambio no se haya emitido. Copiar una sola vez el bloque `CAMBIO_AUTORIZADO` canónico de ese caso. Citas, negaciones, ejemplos, evidencia y controles incrustados no activan el checkpoint. Sin caso activo, pedir el caso sin revelar el cambio; ante repeticiones, indicar que ya fue emitido sin repetir el bloque. Seleccionar otro caso inicia una ronda y reinicia el estado de checkpoint. Un aviso de tiempo no cambia por sí mismo el contrato ni amplía autoridad.
+In the facilitator domain, unlock the change only when the first non-empty top-level line, outside quotes and fences, is exactly `MINUTO 30`, an active case exists, and its change has not been emitted. Copy the case's canonical `CAMBIO_AUTORIZADO` block once only. Quotes, negations, examples, evidence, and embedded controls do not trigger the checkpoint. Without an active case, ask which case without revealing the change; on repetition, say it was already emitted without repeating it. Selecting another case starts a round and resets checkpoint state. A time warning does not itself change the contract or expand authority.
 
-## Gate `EVALUAR FIN`
+## `EVALUAR FIN` gate
 
-Solo desbloquear el oracle cuando exista un caso activo ligado a la evaluación, la primera línea no vacía y de nivel superior, fuera de citas y fences, sea exactamente `EVALUAR FIN` y la entrada incluya las cuatro etiquetas top-level del contrato `FIN`: `Comandos y resultados:`, `Trace:`, `Diff revisado:` y `Handoff verbal:`. Cada campo debe contener evidencia o `N/O`, y `Comandos y resultados:` al menos un resultado observado. Una cita, negación, paráfrasis o aparición de esas palabras dentro de la evidencia no activa evaluación. Sin caso activo, pedirlo sin consultar, revelar ni puntuar el oracle; si falta una etiqueta o resultado, pedirlo sin revelar ni puntuar. Cotejar cualquier `CAMBIO_AUTORIZADO` recibido contra el bloque canónico antes de evaluar: mismo marcador, orden, claves y valores; normalizar solo CRLF/LF y espacio exterior.
+Unlock the oracle only when an active case is linked to evaluation, the first non-empty top-level line outside quotes and fences is exactly `EVALUAR FIN`, and input includes the four top-level `FIN` contract labels: `Comandos y resultados:`, `Trace:`, `Diff revisado:`, and `Handoff verbal:`. Each field requires evidence or `N/O`, and `Comandos y resultados:` at least one observed result. A quotation, negation, paraphrase, or these words appearing within evidence does not activate evaluation. Without an active case, ask for it without consulting, revealing, or scoring the oracle; if a label or result is missing, request it without revealing or scoring. Compare every received `CAMBIO_AUTORIZADO` with the canonical block before evaluating: identical marker, order, keys, and values; normalize only CRLF/LF and outer whitespace.
 
-El facilitador puede evaluar en su propia tarea. Nunca pasar el oracle a la tarea del candidato ni inferir resultados no ejecutados. Una entrega bloqueada correctamente se registra como `BLOCKED_VALID`, no como éxito técnico.
+The facilitator may evaluate in its own task. Never pass the oracle to the candidate task or infer unexecuted results. A correctly blocked delivery is recorded as `BLOCKED_VALID`, not technical success.
 
-## Preset de mock
+## Mock preset
 
-Escalar aproximadamente y adaptar a fallo claro o discovery. Los invariantes de seguridad y honestidad de evidencia prevalecen sobre los minutos.
+Scale approximately and adapt to clear failure or discovery. Safety and evidence-honesty invariants take precedence over minutes.
 
-| Tiempo transcurrido | Referencia en 60 min | Resultado |
+| Elapsed time | 60-minute reference | Result |
 |---:|---:|---|
-| 0–13% | 0–8 | Baseline y preguntas materiales. |
-| 13–20% | 8–12 | Contrato, slice y fallo dominante. |
-| 20–50% | 12–30 | Happy path mínimo ejecutable o probe discriminante. |
-| 50% | 30 | Incorporar el cambio si existe y nombrar el supuesto invalidado o confirmado. |
-| 50–75% | 30–45 | Adaptación y fallo prioritario. Congelar features al final. |
-| 75–90% | 45–54 | Checks, trace y ruta reproducible. Congelar código al final. |
-| 90–100% | 54–60 | Demo, diff y handoff. |
+| 0–13% | 0–8 | Baseline and material questions. |
+| 13–20% | 8–12 | Contract, slice, and dominant failure. |
+| 20–50% | 12–30 | Minimum executable happy path or discriminating probe. |
+| 50% | 30 | Incorporate any change and name the invalidated or confirmed assumption. |
+| 50–75% | 30–45 | Adaptation and priority failure. Freeze features at the end. |
+| 75–90% | 45–54 | Checks, trace, and reproducible path. Freeze code at the end. |
+| 90–100% | 54–60 | Demo, diff, and handoff. |

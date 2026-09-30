@@ -1,38 +1,38 @@
 # FDE Live Case Skill
 
-Una skill de Codex para preparar y resolver casos de **Forward Deployed Engineering**: diagnosticar un fallo, entregar una capacidad operativa o aclarar un problema de cliente antes de construir.
+A Codex skill for preparing and solving **Forward Deployed Engineering** cases: diagnose a failure, deliver an operational capability, or clarify a customer problem before building.
 
-Su objetivo es obtener el **menor resultado verificable que avance el problema**, manteniendo separados los hechos, las hipótesis, los permisos y lo que todavía no se ha demostrado. Incluye preparación, simulaciones, apoyo durante un caso y evaluación posterior. No es una metodología oficial de ninguna empresa.
+Its goal is the **smallest verifiable result that advances the problem**, keeping facts, hypotheses, permissions, and unproven claims separate. It supports preparation, simulations, live-case assistance, and post-attempt assessment. It is not any company's official methodology.
 
-**Configuración probada:** GPT-6.1 Sol con esfuerzo `medium`. La skill no selecciona el modelo ni cambia el esfuerzo de la sesión.
+**Tested configuration:** GPT-6.1 Sol with `medium` reasoning effort. The skill does not select the model or change session effort.
 
-## Cómo funciona
+## How it works
 
 ```mermaid
 flowchart TB
-    U[Petición y contexto] --> M[Elegir modo]
-    M --> O[Actor, outcome y efecto permitido]
-    O --> A[Elegir la siguiente acción]
-    A --> V[Verificar con resultados observados]
-    V --> H[Handoff: demostrado y pendiente]
-    V --> R[Replanear con nueva evidencia]
+    U[Request and context] --> M[Choose mode]
+    M --> O[Actor, outcome and permitted effect]
+    O --> A[Choose the next action]
+    A --> V[Verify observed results]
+    V --> H[Handoff: demonstrated and pending]
+    V --> R[Replan with new evidence]
     R --> A
-    M -. Carga bajo demanda .-> REF[Referencias pertinentes]
+    M -. Load on demand .-> REF[Relevant references]
 ```
 
-La ruta depende de la incertidumbre dominante, no de completar un acrónimo:
+Choose the route by dominant uncertainty, not by completing an acronym:
 
-| Situación | Primer movimiento útil | Evidencia de cierre |
+| Situation | First useful move | Closing evidence |
 |---|---|---|
-| Fallo conocido | Reproducir o inspeccionar trazas y contrastar hipótesis | Corrección respaldada y regresión ejecutada |
-| Capacidad relativamente clara | Definir usuario → decisión → información → acción | Slice verificable y fallo prioritario cubierto |
-| Problema ambiguo | Localizar la decisión pendiente y el probe que puede cambiarla | Recomendación respaldada, incluso no construir |
+| Known failure | Reproduce or inspect traces and contrast hypotheses | Supported correction and executed regression |
+| Relatively clear capability | Define user → decision → information → action | Verifiable slice covering the priority failure |
+| Ambiguous problem | Identify the pending decision and a probe that could change it | Supported recommendation, including not building |
 
-## Instalar
+## Install
 
-Clona este repositorio y copia **solo** `fde-live-case-skill/` a tu directorio de skills personales. Si ya existe una versión, conserva una copia antes de reemplazarla. No copies el repositorio completo como una skill.
+Clone this repository and copy **only** `fde-live-case-skill/` into your personal skills directory. If a version already exists, back it up before replacing it. Do not install the entire repository as a skill.
 
-PowerShell, primera instalación:
+PowerShell, first installation:
 
 ```powershell
 git clone https://github.com/KimiK1983/fde-live-case-skill.git
@@ -40,7 +40,7 @@ New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills" | Out
 Copy-Item -Recurse -LiteralPath .\fde-live-case-skill\fde-live-case-skill -Destination "$env:USERPROFILE\.codex\skills"
 ```
 
-macOS/Linux, primera instalación:
+macOS/Linux, first installation:
 
 ```bash
 git clone https://github.com/KimiK1983/fde-live-case-skill.git
@@ -48,46 +48,48 @@ mkdir -p ~/.codex/skills
 cp -R ./fde-live-case-skill/fde-live-case-skill ~/.codex/skills/
 ```
 
-Abre una sesión nueva de Codex y comprueba que aparece `fde-live-case-skill`. Selecciona GPT-6.1 Sol y `medium` en la sesión. Las referencias son Markdown; no necesitas un servidor, una API key ni Docker para usar la skill. Python solo es necesario para los scripts auxiliares.
+Open a new Codex session and check that `fde-live-case-skill` appears. Select GPT-6.1 Sol and `medium` for the session. The references are Markdown: no server, API key, or Docker is needed to use the skill. Python is only needed for helper scripts.
 
-## Empezar
-
-```text
-$fde-live-case-skill
-Tengo dos horas para preparar un caso FDE. Ayúdame a elegir ejercicios
-y a recoger evidencia de aprendizaje. No reveles las soluciones antes del intento.
-```
-
-Para trabajar en un problema real o un ejercicio fuera de una entrevista:
+## Get started
 
 ```text
 $fde-live-case-skill
-Fuera de una entrevista, resuelve este bug autónomamente en este repositorio.
-Esperado: [...]. Observado: [...]. Se permite editar y ejecutar pruebas locales.
-No se permiten escrituras en sistemas externos. Reproduce primero y verifica la corrección.
+I have two hours to prepare for an FDE case. Help me choose exercises
+and collect learning evidence. Do not reveal solutions before my attempt.
 ```
 
-Para un mock, separa candidato y facilitador. No entregues al candidato el paquete completo: contiene oracles. La [guía de uso](docs/GUIA_DE_USO.md#7-simulación-y-evaluación) explica la exportación y el aislamiento necesario.
+For a real problem or exercise outside an interview:
 
-## Qué evidencia hay
+```text
+$fde-live-case-skill
+Outside an interview, solve this bug autonomously in this repository.
+Expected: [...]. Observed: [...]. Local edits and tests are permitted.
+No writes to external systems. Reproduce first and verify the correction.
+```
 
-| Comprobación | Resultado | Qué permite afirmar |
+For a mock, separate candidate and facilitator. Do not give the candidate the complete package: it contains oracles. The [usage guide](docs/USAGE_GUIDE.md#7-simulation-and-assessment) explains export and required isolation.
+
+## Available evidence
+
+| Check | Result | What it supports |
 |---|---|---|
-| Tests del paquete | **46/46 correctos** | Integridad estructural y regresiones de scripts |
-| GPT-6.1 Sol `medium`: cuatro regresiones conocidas | **4/4 logradas** | Funcionamiento observado en cálculo, conservación de campos, escritura incierta y selección de modo |
-| Superioridad frente a otra versión | **No verificada** | No se ejecutó una comparación ciega A/B con el nuevo modelo |
+| English package tests | **46/46 passed** | Structural integrity and script regressions |
+| GPT-6.1 Sol `medium`: four known regressions, Spanish v0.1.0 | **4/4 met criteria** | Observed arithmetic, field preservation, uncertain-write handling, and mode selection |
+| English behavioral evaluation / superiority over another version | **Not verified** | No English model rerun or blind A/B comparison has been performed |
 
-El modelo ejecutó el cálculo correcto de **2.060 minutos**, reprodujo la pérdida de un filtro de país y comprobó una corrección local, mantuvo `unknown` tras una escritura incierta y no activó un oracle desde un ejemplo citado. No son cuatro casos completos de cliente ni una tasa de éxito generalizable.
+In the historical run, the model executed the correct calculation of **2,060 minutes**, reproduced a lost country filter and checked a local correction, retained `unknown` after an uncertain write, and did not activate an oracle from a quoted example. These were not four complete customer cases or a generalizable success rate.
 
-Consulta [la evidencia, los criterios y las limitaciones](docs/EVIDENCIA.md). Incluye respuestas, comandos y resultados revisables; también deja constancia de una prueba anterior que detectó un fallo de interpretación. Los tests verdes no demuestran eficacia en entrevistas ni resultados de negocio.
+See [evidence, criteria, and limitations](docs/EVIDENCE.md). It includes reviewable responses, commands, and results, plus an earlier test that exposed an interpretation failure. Passing tests do not demonstrate interview effectiveness or business outcomes. Original Spanish run records remain unchanged; labeled English translations are provided for reading.
 
-## Documentación
+## Documentation
 
-- [Guía completa: instalación, modos, ejemplos, mocks y troubleshooting](docs/GUIA_DE_USO.md)
-- [Evidencia y reproducción de las regresiones](docs/EVIDENCIA.md)
-- [Skill raíz y tarjeta para 45–90 minutos](fde-live-case-skill/SKILL.md)
-- [Cómo comparar versiones y medir aprendizaje](fde-live-case-skill/references/MEASUREMENT.md)
-- [Práctica técnica: seis packs y sus oracles](fde-live-case-skill/references/PRACTICE.md)
-- [Cuatro casos de campo: discovery, integración, journey e incidentes](fde-live-case-skill/references/FIELD_PRACTICE.md)
+- [Complete guide: installation, modes, examples, mocks, and troubleshooting](docs/USAGE_GUIDE.md)
+- [Evidence and regression replay](docs/EVIDENCE.md)
+- [Root skill and 45–90-minute card](fde-live-case-skill/SKILL.md)
+- [Compare versions and measure learning](fde-live-case-skill/references/MEASUREMENT.md)
+- [Technical practice: six packs and their oracles](fde-live-case-skill/references/PRACTICE.md)
+- [Four field cases: discovery, integration, journey, and incidents](fde-live-case-skill/references/FIELD_PRACTICE.md)
 
-**Advertencia para evaluación:** los ejercicios y respuestas de este repositorio son públicos. Sirven para aprender y comprobar regresiones; un holdout ciego necesita casos nuevos y oracles privados inaccesibles al candidato.
+**Assessment boundary:** exercises and answers in this repository are public. Use them to learn and check regressions; a blind holdout requires new cases and private oracles inaccessible to the candidate.
+
+**Protocol compatibility:** documentation and ordinary prompts are in English. Exact control tokens and transport keys retain their original spelling; see the [protocol glossary](docs/USAGE_GUIDE.md#7-simulation-and-assessment). They are identifiers, not a requirement to work in Spanish.

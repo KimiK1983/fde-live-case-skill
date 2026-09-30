@@ -1,14 +1,14 @@
-# P1 · Latencia en una plataforma multi-cliente
+# P1 · Latency in a multi-client platform
 
-**Tiempo:** 60 minutos. **Tu rol:** FDE ante un cliente que reporta lentitud de un agente de atención. No hay acceso a producción; puedes analizar estas trazas, pedir un dato discriminante y proponer un probe read-only o un repro local. No se autorizan cambios de timeout, escala o configuración real.
+**Time:** 60 minutes. **Your role:** FDE with a client reporting a slow support agent. No production access; analyze traces, request discriminating data, and propose a read-only probe or local repro. No real timeout, scaling, or configuration changes are authorized.
 
-El cliente dice que “la IA se volvió lenta desde que subió el tráfico”. Cuatro trazas de muestra, en segundos:
+The client says “AI became slow after traffic increased.” Four sample traces, in seconds:
 
-| Trace | Solicitudes concurrentes | Cola/orquestador | Modelo | Tool externa | Total |
+| Trace | Concurrent requests | Queue/orchestrator | Model | External tool | Total |
 |---|---:|---:|---:|---:|---:|
-| a | 2 | 0,2 | 1,3 | 0,8 | 2,3 |
-| b | 3 | 0,3 | 1,4 | 0,9 | 2,6 |
-| c | 20 | 3,1 | 1,5 | 0,9 | 5,5 |
-| d | 24 | 4,0 | 1,4 | 1,0 | 6,4 |
+| a | 2 | 0.2 | 1.3 | 0.8 | 2.3 |
+| b | 3 | 0.3 | 1.4 | 0.9 | 2.6 |
+| c | 20 | 3.1 | 1.5 | 0.9 | 5.5 |
+| d | 24 | 4.0 | 1.4 | 1.0 | 6.4 |
 
-Delimita qué sabes y qué solo sospechas; escoge un siguiente probe que pueda separar hipótesis. Explica cómo decidirías entre mitigación para el cliente y corrección compartida de plataforma, qué evidencia exigirías antes de declarar éxito y cómo harías handoff. Adapta tu decisión si aparece un segundo cliente afectado.
+Bound what you know versus suspect; choose a next probe separating hypotheses. Explain how you decide between client mitigation and a shared platform correction, what evidence is needed before claiming success, and how to hand off. Adapt if a second affected client appears.

@@ -1,7 +1,7 @@
-# J1 · Journey por WhatsApp para tasación y cita de venta
+# J1 · WhatsApp journey for valuation and sales appointment
 
-**Tiempo:** 60 minutos. **Tu rol:** FDE con un equipo comercial. No hay canal ni sistemas reales; implementa, si aporta evidencia, una función de estado y tests locales. Ninguna reserva real ni mensaje externo está autorizado.
+**Time:** 60 minutes. **Your role:** FDE with a sales team. No real channel or systems; implement a state function and local tests if they supply evidence. No real bookings or external messages are authorized.
 
-En este escenario sintético, una persona quiere vender su vehículo a un concesionario y envía por WhatsApp marca, modelo, año y versión (trim). Un servicio de valoración devuelve una cotización preliminar; si la persona la acepta, se ofrece una cita con un asesor para inspeccionar el vehículo. Aceptar la cotización no equivale a confirmar una reserva ni a cerrar la compraventa. Hoy el equipo mide “conversaciones contenidas sin agente”, pero algunos clientes llegan a la cita con una cotización incorrecta o desactualizada.
+In this synthetic scenario, a person wants to sell their vehicle to a dealership and sends make, model, year, and trim through WhatsApp. A valuation service returns a preliminary quote; if accepted, an appointment with an adviser is offered for vehicle inspection. Quote acceptance does not confirm a booking or complete the sale. The team currently measures “conversations contained without an agent,” but some customers arrive with incorrect or stale quotes.
 
-Propón el menor slice que preserve una cotización correcta a lo largo de la conversación y un handoff humano cuando falte certeza. Distingue salida del bot de resultado comercial; define una medida de éxito y señales de calidad. Demuestra flujo feliz y un fallo que pueda invalidar cotización o autorización. Si aparece un dato corregido durante el caso, revisa el estado y la comprobación.
+Propose the smallest slice preserving a correct quote across the conversation and human handoff when certainty is missing. Distinguish bot output from business outcome; define success and quality signals. Demonstrate happy path and a failure invalidating quote or authorization. If corrected data arrives, review state and check.

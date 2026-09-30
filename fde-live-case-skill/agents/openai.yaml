@@ -1,4 +1,4 @@
 interface:
   display_name: "FDE Live Case"
-  short_description: "Prepara y resuelve casos FDE con agencia y evidencia"
-  default_prompt: "Usa $fde-live-case-skill para ayudarme con este caso FDE según el propósito que indique y el tiempo disponible."
+  short_description: "Prepare and solve FDE cases with agency and evidence"
+  default_prompt: "Use $fde-live-case-skill to help me with this FDE case according to my stated purpose and available time."

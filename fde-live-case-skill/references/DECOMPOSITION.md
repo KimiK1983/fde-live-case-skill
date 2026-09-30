@@ -1,230 +1,230 @@
-# Decomposition compacta para un caso FDE
+# Compact decomposition for an FDE case
 
-## Contenido
+## Contents
 
-[Rutas](#rutas-de-resolución) · [Requisito operativo](#del-requisito-operativo-al-slice) · [Barrido](#barrera-de-barrido-inicial) · [Divergencia](#prueba-de-divergencia) · [Estados](#estados-y-progreso) · [Resumen](#resumen-de-cinco-frases) · [Preguntas](#preguntas-de-máximo-valor) · [Slice](#selección-del-slice) · [Contrato](#contrato-y-evidencia) · [Reorientación](#reorientación) · [Cobertura AOWSCFS](#marco-aowscfs) · [Fuentes](#fundamento-y-límites)
+[Routes](#resolution-routes) · [Operational requirement](#from-operational-requirement-to-slice) · [Scan](#initial-scan-boundary) · [Divergence](#divergence-test) · [States](#states-and-progress) · [Summary](#five-sentence-summary) · [Questions](#highest-value-questions) · [Slice](#slice-selection) · [Contract](#contract-and-evidence) · [Reorientation](#reorientation) · [AOWSCFS coverage](#aowscfs-framework) · [Sources](#basis-and-limits)
 
-## Objetivo
+## Purpose
 
-Elegir la siguiente decisión material, obtener evidencia y actuar dentro del alcance permitido. En entrega estándar, tener baseline, contrato y slice durante el primer 20% es una referencia, no un gate. Un bug claro llega antes al repro; discovery puede usar más tiempo mientras obtenga evidencia útil.
+Choose the next material decision, obtain evidence, and act within the permitted scope. In standard delivery, reaching a baseline, contract, and slice in the first 20% is a reference, not a gate. A clear bug reaches the repro sooner; discovery may use more time while obtaining useful evidence.
 
-## Rutas de resolución
+## Resolution routes
 
-Elegir por la incertidumbre que bloquea el avance, no por el nombre del framework. Las rutas son alternativas y pueden cambiar dentro del mismo caso.
+Choose by the uncertainty blocking progress, not the framework's name. Routes are alternatives and may change within a case.
 
-| Situación | Siguiente trabajo | Evidencia suficiente para avanzar |
+| Situation | Next work | Sufficient evidence to advance |
 |---|---|---|
-| **Discovery:** problema, prioridad o resultado disputados | Definir la decisión y su owner; descomponer explicaciones o palancas; priorizar por impacto abordable e incertidumbre; elegir y ejecutar el análisis o probe que podría cambiar la decisión. | Observación que apoye, refute o reabra una alternativa; recomendación condicionada y siguiente experimento con owner. No construir puede ser correcto. |
-| **Entrega:** capacidad y aceptación suficientemente acordadas | Describir el requisito operativo; derivar componentes y dependencias; construir el menor recorrido verificable; comprobarlo con el usuario o dejar pendiente esa validación. | Ruta ejecutada, fallo prioritario y límite exacto de lo demostrado; siguiente paso hacia uso real con responsable y señal de outcome. |
-| **Debugging/incidente:** comportamiento esperado frente a observado | Recoger repro o trazas; formular hipótesis y predicciones; ejecutar la prueba que discrimine; corregir la causa respaldada y verificar regresión. | Comparación antes/después y prueba del comportamiento afectado; incertidumbre restante explícita. Si hay impacto activo, mitigar dentro de permisos y comprobar recuperación sin esperar una explicación completa. |
+| **Discovery:** disputed problem, priority, or outcome | Define the decision and owner; decompose explanations or levers; prioritize addressable impact and uncertainty; choose and execute the analysis or probe that could change the decision. | An observation supporting, refuting, or reopening an alternative; a conditional recommendation and next experiment with an owner. Not building may be correct. |
+| **Delivery:** sufficiently agreed capability and acceptance | Describe the operational requirement; derive components and dependencies; build the smallest verifiable path; check it with the user or leave that validation pending. | Executed path, priority failure, and exact limit of what was demonstrated; next step toward real use with an owner and outcome signal. |
+| **Debugging/incident:** expected versus observed behavior | Collect repro or traces; formulate hypotheses and predictions; execute the discriminating test; fix the supported cause and verify regression. | Before/after comparison and test of affected behavior; explicit remaining uncertainty. With active impact, mitigate within permissions and verify recovery without waiting for a complete explanation. |
 
-En discovery, una priorización no prueba causalidad ni ahorro: distinguir volumen/tiempo expuesto de mejora atribuible. Si faltan datos, elegir una observación autorizada, un walkthrough del proceso o un experimento acotado; no inventar el resultado. Un análisis plausible sin evidencia no cierra la ruta.
+In discovery, prioritization does not prove causality or savings: distinguish exposed volume/time from attributable improvement. When data is missing, choose an authorized observation, process walkthrough, or bounded experiment; do not invent its result. Plausible analysis without evidence does not close the route.
 
-Para una cifra derivada que cambie prioridad, alcance o handoff: conservar filas, periodo y unidades; mostrar cada operación y subtotal. Con herramienta local disponible, ejecutar el cálculo y cotejar su salida con el total redactado; sin ella, recomputar por otra agrupación. Comprobar que numerador y denominador describen la misma población. Si los resultados discrepan o no se puede verificar, no apoyar la recomendación en un total preciso: señalar la incertidumbre y usar solo comparaciones que sigan siendo válidas. Tiempo expuesto, cobertura y correlación no demuestran ahorro ni causalidad.
+For a derived figure that changes priority, scope, or handoff: retain rows, period, and units; show each operation and subtotal. When a local tool is available, execute the calculation and reconcile its output with the written total; otherwise recompute using another grouping. Check that numerator and denominator describe the same population. If results disagree or cannot be verified, do not base the recommendation on a precise total: flag uncertainty and use only comparisons that remain valid. Time exposure, coverage, and correlation do not demonstrate savings or causality.
 
-En un incidente, separar mitigación, causa respaldada y prevención. Si aparece un patrón entre clientes, registrar evidencia reutilizable y owner de plataforma sin declarar generalidad por una coincidencia.
+In an incident, separate mitigation, supported cause, and prevention. If a cross-client pattern appears, record reusable evidence and a platform owner without declaring generality from coincidence.
 
-## Del requisito operativo al slice
+## From operational requirement to slice
 
-Cuando haya que entregar una capacidad, expresar:
+When delivering a capability, express:
 
-`Usuario → interfaz/canal → decisión → información necesaria → acción`
+`User → interface/channel → decision → required information → action`
 
-Ejemplo hipotético: un operador revisa una incidencia, decide resolverla o escalarla con información autorizada y conserva el contexto del handoff. Esto describe la capacidad; no concede permiso para escribir.
+Hypothetical example: an operator reviews an incident, decides whether to resolve or escalate it using authorized information, and preserves handoff context. This describes a capability; it does not grant write permission.
 
-Derivar solo lo necesario: entidades y fuentes para la información; reglas o inferencia para la decisión; estados, precondiciones, permisos y tools para la acción; interfaz para el usuario. Vincular el requisito al check y a la señal de outcome. No impone Foundry, una ontología, UI nueva ni un LLM.
+Derive only what is needed: entities and sources for information; rules or inference for the decision; states, preconditions, permissions, and tools for the action; an interface for the user. Connect the requirement to its check and outcome signal. This does not require Foundry, an ontology, a new UI, or an LLM.
 
-Elegir una ruta que cruce esas piezas, no una capa horizontal aislada. Antes de uso real, identificar dependencia pendiente, quién opera/recupera y cómo observar adopción o resultado. El timebox puede limitarse a demostrar el slice y entregar ese handoff, no a implementar producción completa.
+Choose a path crossing those pieces, not an isolated horizontal layer. Before real use, identify pending dependencies, who operates/recovers, and how to observe adoption or results. The timebox may cover only demonstrating the slice and delivering that handoff, not implementing full production.
 
-## Barrera de barrido inicial
+## Initial scan boundary
 
-Revisar silenciosa y proporcionalmente el contexto disponible y las omisiones materiales; AOWSCFS es una comprobación de cobertura, no un gate de exhaustividad. Terminar al tener un siguiente paso falsable y responsables para las decisiones pendientes. Con esperado y efecto claros, inspeccionar y reproducir ya satisface el barrido.
+Silently and proportionally review available context and material omissions; AOWSCFS checks coverage, not exhaustiveness. Stop once a falsifiable next step and owners for pending decisions exist. With clear expected behavior and effect, inspection and reproduction satisfy the scan.
 
-## Prueba de divergencia
+## Divergence test
 
-Resolver por inspección los hechos recuperables. Para cada incógnita restante, comparar dos respuestas plausibles. Es material si cambian outcome, aceptación, fuente autoritativa, efecto permitido, riesgo dominante, slice o comprobación.
+Inspect recoverable facts. For each remaining unknown, compare two plausible answers. It is material if they change outcome, acceptance, authoritative source, permitted effect, dominant risk, slice, or check.
 
-Después decidir por riesgo, reversibilidad y resolver disponible:
+Then choose based on risk, reversibility, and available resolver:
 
-- **Inspeccionar** hechos recuperables de repo, logs, schemas, documentación o entorno.
-- **Preguntar** intención, preferencia, aceptación, autoridad o efecto sensible que solo un stakeholder o política puede fijar.
-- **Probar** causalidad o una hipótesis técnica con un probe seguro y reversible.
-- **Reconciliar** el estado de un efecto externo incierto.
-- **Decidir y registrar** una elección técnica reversible dentro del envelope confirmado.
+- **Inspect** recoverable facts in repositories, logs, schemas, documentation, or environment.
+- **Ask** about intent, preference, acceptance, authority, or a sensitive effect only a stakeholder or policy can set.
+- **Test** causality or a technical hypothesis with a safe, reversible probe.
+- **Reconcile** the state of an uncertain external effect.
+- **Decide and record** a reversible technical choice within the confirmed envelope.
 
-Una decisión técnica pertenece al candidato solo si puede revertirse localmente sin cambiar aceptación, seguridad, datos protegidos, un contrato externo ni el efecto permitido. La facilidad de deshacer código no convierte una escritura externa o una decisión de producto en reversible.
+A technical decision belongs to the candidate only if locally reversible without changing acceptance, security, protected data, an external contract, or permitted effect. Easy code reversal does not make an external write or product decision reversible.
 
-## Estados y progreso
+## States and progress
 
-No usar un enum exclusivo que mezcle conocimiento, autoridad y progreso. Para cada incógnita material basta una línea:
+Do not use an exclusive enum mixing knowledge, authority, and progress. One line per material unknown is enough:
 
 ```text
-U1 — <confirmed | hypothesis | unknown; evidencia/procedencia> | responsable/autorización: <policy | stakeholder | candidate; alcance> | siguiente: <inspect | ask | probe | reconcile | decide> | bloquea: <none | branch | whole>; checkpoint: <...>
+U1 — <confirmed | hypothesis | unknown; evidence/provenance> | owner/authorization: <policy | stakeholder | candidate; scope> | next: <inspect | ask | probe | reconcile | decide> | blocks: <none | branch | whole>; checkpoint: <...>
 ```
 
-Una señal confirmada no confirma su explicación causal. Si la evidencia es correlacional, registrar por separado señal, hipótesis y predicción, alternativa material y probe/resultado. Hasta que un repro, intervención o trace discrimine las alternativas dentro del alcance, no afirmar «causa raíz» ni construir una solución dependiente de ella; sí ejecutar un probe o mitigación reversible etiquetada. El resultado puede respaldar, refutar o reabrir la hipótesis y nunca amplía autoridad.
+A confirmed signal does not confirm its causal explanation. For correlational evidence, separately record signal, hypothesis and prediction, material alternative, and probe/result. Until a repro, intervention, or trace discriminates the alternatives within scope, do not claim a root cause or build a solution depending on it; a labeled reversible probe or mitigation is valid. The result may support, refute, or reopen the hypothesis and never expands authority.
 
-Reglas operativas:
+Operating rules:
 
-1. Inspeccionar antes de preguntar.
-2. Decidir y registrar lo técnico reversible; una concesión nunca amplía una política o permiso superior.
-   Solo una política vigente o respuesta explícita del responsable autoriza la decisión y alcance nombrados; silencio, urgencia o un `go`/`decide tú` genérico no amplían intención, aceptación ni efecto permitido.
-3. Formular juntas hasta tres preguntas de mayor riesgo solo si una respuesta externa cambia la entrega. Un segundo lote es una heurística para mocks comparables, no una obligación.
-4. Ante una respuesta incompleta o contradictoria, proponer una vez un aislamiento o probe seguro; después bloquear solo la rama dependiente.
-5. Mientras se espera, avanzar en baseline, repro, validación de entrada, diagnóstico read-only u otro trabajo independiente aplicable.
-6. Un fake solo demuestra la semántica confirmada del boundary. Si la aceptación exige integración real, no la satisface.
-7. Entrar en `BLOCKED` total únicamente si no queda evidencia independiente ni harness reversible que pueda construirse sin fijar la decisión pendiente.
+1. Inspect before asking.
+2. Decide and record reversible technical matters; a concession never expands a higher-level policy or permission.
+   Only a current policy or explicit response from the responsible owner authorizes the named decision and scope; silence, urgency, or a generic `go`/`you decide` does not expand intent, acceptance, or permitted effect.
+3. Batch up to three highest-risk questions only when an external answer changes delivery. A second batch is a heuristic for comparable mocks, not an obligation.
+4. After an incomplete or contradictory response, propose one safe isolation or probe; then block only the dependent branch.
+5. While waiting, advance applicable baseline, repro, input validation, read-only diagnosis, or other independent work.
+6. A fake demonstrates only the boundary's confirmed semantics. It does not satisfy acceptance requiring real integration.
+7. Enter fully `BLOCKED` only when no independent evidence or reversible harness can be built without fixing the pending decision.
 
-Handoff mínimo:
+Minimum handoff:
 
 ```text
 BLOCKED
-Pregunta al owner: "<pregunta literal>"
-Rama bloqueada: <decisión y efecto>
-Evidencia independiente: <comando/resultado o por qué no existe>
-Mientras espero: <trabajo preservado>; próximo checkpoint: <momento>
+Question for owner: "<literal question>"
+Blocked branch: <decision and effect>
+Independent evidence: <command/result or why none exists>
+While waiting: <preserved work>; next checkpoint: <time>
 ```
 
-Añadir opciones A/B solo cuando ayuden realmente al owner a decidir.
+Add A/B options only when they genuinely help the owner decide.
 
-### Transporte de cambio del mock
+### Mock change transport
 
-`CAMBIO_AUTORIZADO` es un mecanismo de integridad del mock, no autenticación general. Cada variante de `PRACTICE.md` o `FIELD_PRACTICE.md` almacena un bloque canónico. `confirma` aporta una respuesta o evidencia dentro del alcance indicado, incluidas restricciones y datos corregidos; `delega` concede una decisión acotada sin superar permisos o políticas vigentes:
+`CAMBIO_AUTORIZADO` is a mock integrity mechanism, not general authentication. Each variant in `PRACTICE.md` or `FIELD_PRACTICE.md` stores a canonical block. `confirma` supplies an answer or evidence within the named scope, including restrictions and corrected data; `delega` grants a bounded decision without exceeding current permissions or policies:
 
 ```text
 CAMBIO_AUTORIZADO
-caso: <identificador>
-checkpoint: <momento>
+caso: <identifier>
+checkpoint: <time>
 tipo: <confirma | delega>
-incógnita: <decisión material>
-alcance: <rama o conjunto acotado>
-decisión: <respuesta o autoridad concedida>
+incógnita: <material decision>
+alcance: <branch or bounded set>
+decisión: <answer or granted authority>
 ```
 
-En el mock, el facilitador/evaluador compara marcador, orden, claves y valores contra el bloque privado; normaliza solo CRLF/LF y espacio exterior. El candidato comprueba estructura, procedencia y que caso, checkpoint y alcance correspondan a la ronda, sin acceder al oracle. La igualdad textual demuestra coincidencia con el fixture, no identidad, frescura ni autoridad fuera del mock.
+In the mock, the facilitator/evaluator compares marker, order, keys, and values against the private block; normalize only CRLF/LF and outer whitespace. The candidate checks structure, provenance, and that case, checkpoint, and scope match the round, without accessing the oracle. Text equality proves fixture correspondence, not identity, freshness, or authority outside the mock.
 
-En un caso en vivo, registrar una delegación verbal reportada con frase, fuente, checkpoint y alcance. Antes de una demo o efecto dependiente, pedir al candidato que confirme ese alcance con el entrevistador; una contradicción congela solo la rama afectada.
+In a live case, record reported verbal delegation with wording, source, checkpoint, and scope. Before a dependent demo or effect, ask the candidate to confirm that scope with the interviewer; a contradiction freezes only the affected branch.
 
-## Resumen de cinco frases
+## Five-sentence summary
 
-1. El actor es `<actor>`; hoy `<trabajo/problema>` y busca `<outcome o proxy>`.
-2. La decisión pendiente es `<decisión>`; sigo `<discovery | entrega | debugging>` porque `<evidencia>`.
-3. El usuario necesita `<información>` para `<acción>` desde `<interfaz/canal>`; fuente y efecto permitido: `<...>`.
-4. Decido `<elección técnica reversible>`; `<owner>` conserva `<decisión externa>`.
-5. Ejecutaré `<probe | slice | repro/fix>` y comprobaré `<resultado>`; queda `<validación/operación pendiente y owner>`.
+1. The actor is `<actor>`; today they `<work/problem>` and want `<outcome or proxy>`.
+2. The pending decision is `<decision>`; I follow `<discovery | delivery | debugging>` because `<evidence>`.
+3. The user needs `<information>` for `<action>` through `<interface/channel>`; source and permitted effect: `<...>`.
+4. I decide `<reversible technical choice>`; `<owner>` retains `<external decision>`.
+5. I will execute `<probe | slice | repro/fix>` and check `<result>`; remaining: `<pending validation/operation and owner>`.
 
-Es una ayuda verbal, no cinco campos obligatorios ante un bug acotado.
+A verbal aid, not five mandatory fields for a bounded bug.
 
-## Preguntas de máximo valor
+## Highest-value questions
 
-Elegir según divergencia y resolver, no por completar una lista:
+Choose by divergence and resolver, not checklist completion:
 
-- ¿Qué comportamiento observable define que el caso está resuelto?
-- ¿Cuál requisito es obligatorio y cuál es stretch?
-- ¿La integración real forma parte de la aceptación o basta probar el boundary?
-- ¿Qué efecto máximo está permitido y quién lo autoriza?
-- ¿Qué fallo debemos manejar explícitamente?
-- ¿Qué ocurrió en un caso reciente y qué workaround se usó?
+- What observable behavior defines resolution?
+- Which requirement is mandatory and which is stretch?
+- Is real integration part of acceptance, or is testing the boundary sufficient?
+- What maximum effect is permitted, and who authorizes it?
+- Which failure must we handle explicitly?
+- What happened in a recent case, and what workaround was used?
 
-No preguntar por nombre de archivo, puerto, helper estándar u otra representación local equivalente salvo que afecte un contrato o restricción real.
+Do not ask about filename, port, standard helper, or another equivalent local representation unless it affects a real contract or constraint.
 
-## Selección del slice
+## Slice selection
 
-Comparar cualitativamente:
+Compare qualitatively:
 
-`outcome/check + reducción de riesgo + cobertura end-to-end + reversibilidad - esfuerzo - dependencia externa - blast radius`
+`outcome/check + risk reduction + end-to-end coverage + reversibility - effort - external dependency - blast radius`
 
-Elegir el menor slice que:
+Choose the smallest slice that:
 
-- cruza las capas necesarias;
-- puede refutar una hipótesis material o verificar un requisito;
-- tiene una demo simple;
-- deja fuera efectos o integraciones no autorizados;
-- evita credenciales o servicios frágiles salvo que sean parte de la aceptación.
+- crosses the necessary layers;
+- can refute a material hypothesis or verify a requirement;
+- has a simple demo;
+- excludes unauthorized effects or integrations;
+- avoids credentials or fragile services unless part of acceptance.
 
-Generar dos opciones solo cuando la elección cambie materialmente outcome, riesgo o aceptación.
+Generate two options only when the choice materially changes outcome, risk, or acceptance.
 
-## Contrato y evidencia
+## Contract and evidence
 
-Contrato compacto:
+Compact contract:
 
 ```text
-Confirmado y procedencia: ...
-Decisiones técnicas reversibles que tomo: ...
-Incógnita -> owner -> siguiente / alcance bloqueado: ...
-Actor/outcome observable o proxy: ...
-Ruta y decisión pendiente del caso: ...
-Usuario/interfaz -> decisión operativa -> información -> acción: ...
-Entrada -> fuente -> salida; effect envelope: ...
-Probe, slice o repro/fix / no-objetivos: ...
+Confirmed and provenance: ...
+Reversible technical decisions I make: ...
+Unknown -> owner -> next / blocked scope: ...
+Actor/observable outcome or proxy: ...
+Route and pending case decision: ...
+User/interface -> operational decision -> information -> action: ...
+Input -> source -> output; effect envelope: ...
+Probe, slice, or repro/fix / non-goals: ...
 Verification: ...
-Validation observada o siguiente experimento con owner; operación pendiente: ...
-Riesgo dominante / stop: ...
+Observed validation or next experiment with owner; pending operation: ...
+Dominant risk / stop: ...
 ```
 
-**Verification** pregunta si el artefacto cumple el contrato. **Validation** pregunta si la señal disponible indica que ayuda al actor. Un test puede verificar código; no demuestra por sí solo impacto de negocio.
+**Verification** asks whether the artifact meets its contract. **Validation** asks whether the available signal suggests it helps the actor. A test can verify code; it does not by itself demonstrate business impact.
 
-Si existen varias claims materiales, usar únicamente las filas que aporten trazabilidad:
+For multiple material claims, use only rows adding traceability:
 
-| Claim material | Source/owner | Check técnico | Señal de outcome o siguiente experimento | Resultado |
+| Material claim | Source/owner | Technical check | Outcome signal or next experiment | Result |
 |---|---|---|---|---|
 
-No llenar celdas con evidencia inventada; `no observado` es un resultado honesto.
+Do not fill cells with invented evidence; `not observed` is an honest result.
 
-## Reorientación
+## Reorientation
 
-Ante cambio o evidencia nueva:
+After a change or new evidence:
 
 ```text
-Nueva evidencia:
-Supuesto invalidado o confirmado:
-Contrato / slice / check afectado:
-Decisión: mantener | adaptar | recortar | handoff
-Nueva evidencia a ejecutar:
+New evidence:
+Invalidated or confirmed assumption:
+Affected contract / slice / check:
+Decision: keep | adapt | trim | handoff
+New evidence to execute:
 ```
 
-Si el cambio entra en el timebox, recortar otra cosa y ejecutar la comprobación afectada.
+If the change fits the timebox, trim something else and execute the affected check.
 
-## Ejemplos de decisión
+## Decision examples
 
-- **Bug claro**: expected/observed y efecto de lectura ya están definidos. Reproducir antes de preguntar.
-- **Elección reversible**: usar `dataclass` o `dict` local no cambia contrato. Elegir la convención existente, registrarla y avanzar.
-- **Preferencia externa**: CSV frente a endpoint cambia el entregable aceptado. Preguntar al owner.
-- **Causalidad**: no se sabe si la latencia viene de retrieval o generación. Medir ambos tramos antes de rediseñar.
-- **Write unknown**: un timeout pudo ocurrir después del commit. Mantener `unknown`, reconciliar con la misma clave y no reintentar a ciegas.
+- **Clear bug**: expected/observed behavior and read effect are already defined. Reproduce before asking.
+- **Reversible choice**: a local `dataclass` or `dict` does not change the contract. Choose the existing convention, record it, and advance.
+- **External preference**: CSV versus endpoint changes the accepted deliverable. Ask the owner.
+- **Causality**: unclear whether latency comes from retrieval or generation. Measure both segments before redesigning.
+- **Write unknown**: a timeout may occur after commit. Retain `unknown`, reconcile with the same key, and do not retry blindly.
 
-## Marco AOWSCFS
+## AOWSCFS framework
 
-Comprobar solo omisiones que cambien la siguiente acción. Estas seis lentes no son fases ni un cuestionario; `Slice` es su síntesis:
+Check only omissions changing the next action. These six lenses are not phases or a questionnaire; `Slice` synthesizes them:
 
-1. **Actor/owner** — quién usa, opera, decide, aprueba y recupera; no asumir que coinciden.
-2. **Outcome** — cambio observable, población, baseline y métrica u otro proxy cuando aplique.
-3. **Workflow** — trigger, estados, decisiones, workarounds y handoffs; distinguir lo declarado de lo observado.
-4. **Systems/Data** — interfaces, fuentes, formato/frescura, acceso, provenance y ownership.
-5. **Constraints** — efecto máximo, seguridad, latencia, coste, tiempo, compliance, disponibilidad y adopción.
-6. **Failure modes** — técnico, semántico, humano, organizacional y efecto incierto; priorizar el dominante.
-7. **Slice** — síntesis: menor ruta vertical que puede comprobar el contrato, aportar una señal del outcome o retirar el riesgo dominante.
+1. **Actor/owner** — who uses, operates, decides, approves, and recovers; do not assume they are the same.
+2. **Outcome** — observable change, population, baseline, and metric or another proxy where applicable.
+3. **Workflow** — trigger, states, decisions, workarounds, and handoffs; distinguish reported from observed.
+4. **Systems/Data** — interfaces, sources, format/freshness, access, provenance, and ownership.
+5. **Constraints** — maximum effect, security, latency, cost, time, compliance, availability, and adoption.
+6. **Failure modes** — technical, semantic, human, organizational, and uncertain effect; prioritize the dominant one.
+7. **Slice** — synthesis: smallest vertical path that can check the contract, supply an outcome signal, or remove the dominant risk.
 
-`AOWSCFS` conserva compatibilidad como mnemónico de cobertura. No exige nombrar sus letras ni completar un inventario antes de actuar.
+`AOWSCFS` retains compatibility as a coverage mnemonic. It does not require naming its letters or completing an inventory before acting.
 
-## Errores frecuentes
+## Common mistakes
 
-- convertir decomposition en consultoría genérica;
-- mostrar un barrido completo cuando un repro ya reduce más incertidumbre;
-- preguntar por elecciones técnicas reversibles;
-- inventar intención, aceptación, métricas o autoridad;
-- confundir un fake con aceptación de la integración;
-- confundir verification con validation;
-- incluir un LLM donde una regla basta;
-- usar `BLOCKED` para evitar trabajo independiente;
-- afirmar evidencia no ejecutada.
+- turning decomposition into generic consulting;
+- showing a full scan when a repro already reduces more uncertainty;
+- asking about reversible technical choices;
+- inventing intent, acceptance, metrics, or authority;
+- confusing a fake with integration acceptance;
+- confusing verification with validation;
+- adding an LLM where a rule is sufficient;
+- using `BLOCKED` to avoid independent work;
+- claiming unexecuted evidence.
 
-## Fundamento y límites
+## Basis and limits
 
-Adaptación local para casos FDE, sin afiliación empresarial ni superioridad conductual demostrada. Consultar estas fuentes durante autoría o para verificar una atribución, no como lectura obligatoria del caso:
+Local adaptation for FDE cases, without business affiliation or demonstrated behavioral superiority. Consult these sources during authoring or to verify attribution, not as mandatory case reading:
 
-- **Entrega:** Palantir, [use case lifecycle](https://www.palantir.com/docs/foundry/use-case-life-cycle/overview), [requisitos funcionales](https://www.palantir.com/docs/foundry/use-case-life-cycle/distilling-functional-requirements), [diseño](https://www.palantir.com/docs/foundry/use-case-life-cycle/solution-design) y [secuenciación](https://www.palantir.com/docs/foundry/use-case-life-cycle/sequencing-development). Se adapta la conexión decisión–componentes; no se exige su plataforma.
-- **Discovery:** McKinsey, [resolución estructurada de problemas](https://www.mckinsey.com/capabilities/strategy-and-corporate-finance/our-insights/how-to-master-the-seven-step-problem-solving-process). Se adapta definición, descomposición, priorización, análisis y síntesis, sin imponer siete entregables.
-- **Debugging:** Google SRE, [Effective Troubleshooting](https://sre.google/sre-book/effective-troubleshooting/). Observación, hipótesis y pruebas; mitigación no equivale a causa resuelta.
+- **Delivery:** Palantir, [use case lifecycle](https://www.palantir.com/docs/foundry/use-case-life-cycle/overview), [functional requirements](https://www.palantir.com/docs/foundry/use-case-life-cycle/distilling-functional-requirements), [design](https://www.palantir.com/docs/foundry/use-case-life-cycle/solution-design), and [sequencing](https://www.palantir.com/docs/foundry/use-case-life-cycle/sequencing-development). The decision–components connection is adapted; its platform is not required.
+- **Discovery:** McKinsey, [structured problem solving](https://www.mckinsey.com/capabilities/strategy-and-corporate-finance/our-insights/how-to-master-the-seven-step-problem-solving-process). Definition, decomposition, prioritization, analysis, and synthesis are adapted without requiring seven deliverables.
+- **Debugging:** Google SRE, [Effective Troubleshooting](https://sre.google/sre-book/effective-troubleshooting/). Observation, hypotheses, and tests; mitigation is not a resolved cause.
 
-Fuentes consultadas el 28 de septiembre de 2026. La comparación de esta adaptación con la versión anterior sigue [MEASUREMENT.md](MEASUREMENT.md); un test documental no demuestra mejores decisiones.
+Sources consulted September 28, 2026. Comparing this adaptation with the previous version follows [MEASUREMENT.md](MEASUREMENT.md); a documentation test does not demonstrate better decisions.

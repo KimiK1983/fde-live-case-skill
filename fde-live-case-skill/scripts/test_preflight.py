@@ -162,7 +162,7 @@ def markdown_slugs(text: str) -> set[str]:
 
 TRANSPORT_PATTERN = re.compile(
     r"<details>\s*"
-    r"<summary>Cambio del minuto 30 — variante ([1-6][AB])</summary>\s*"
+    r"<summary>Minute-30 change — variant ([1-6][AB])</summary>\s*"
     r"```text\r?\n"
     r"CAMBIO_AUTORIZADO\r?\n"
     r"caso: ([^\r\n]+)\r?\n"
@@ -180,24 +180,24 @@ EXPECTED_LAUNCHER_DIGEST = (
 
 EXPECTED_FIELD_TRANSPORTS = {
     "D1": (
-        "¿Se puede escribir en la agenda de producción?",
-        "piloto de cambios de cita",
-        "Solo lectura/simulación hasta permiso explícito.",
+        "Can the production schedule be written?",
+        "appointment-change pilot",
+        "Read-only/simulation until explicit permission.",
     ),
     "I1": (
-        "¿Se puede reconciliar el resultado real?",
-        "reconciliación real",
-        "Bloquear retry real y comunicar a IT la falta de permiso GET; el candidato no modifica scopes, su autorización y habilitación corresponden a IT. Fake local permitido solo como prueba interna.",
+        "Can the actual result be reconciled?",
+        "real reconciliation",
+        "Block real retry and inform IT of missing GET permission; the candidate does not modify scopes, whose authorization and enablement belong to IT. A local fake is permitted only as an internal test.",
     ),
     "J1": (
-        "¿Sigue vigente la cotización anterior?",
-        "cotización y confirmación de cita",
-        "El usuario aceptó q1 para datos v1 y ahora corrige el trim a v2, antes de confirmar una cita. Invalidar q1 y su aceptación; recotizar o hacer handoff, y obtener nueva aceptación antes de continuar. Ninguna reserva real está autorizada.",
+        "Is the previous quote still current?",
+        "quote and appointment confirmation",
+        "The user accepted q1 for v1 data and now corrects the trim to v2 before confirming an appointment. Invalidate q1 and its acceptance; requote or hand off, and obtain new acceptance before continuing. No real booking is authorized.",
     ),
     "P1": (
-        "¿El cuello pertenece a la plataforma compartida?",
-        "triage de plataforma",
-        "Un segundo cliente presenta aumento de latencia en la etapa de cola con concurrencia similar. Investigar la hipótesis de un cuello compartido, sin darla por demostrada; mantener la mitigación por cliente limitada a análisis o pruebas locales/read-only, sin cambios reales de timeout, escala o configuración.",
+        "Does the bottleneck belong to the shared platform?",
+        "platform triage",
+        "A second client shows increased queue-stage latency at similar concurrency. Investigate a shared-bottleneck hypothesis without treating it as proven; keep client mitigation limited to analysis or local/read-only tests, with no real timeout, scale, or configuration changes.",
     ),
 }
 
@@ -836,7 +836,7 @@ class PackageTests(unittest.TestCase):
         for brief in briefs:
             with self.subTest(brief=brief.name):
                 content = brief.read_text(encoding="utf-8")
-                for marker in ("CAMBIO_AUTORIZADO", "EVALUAR FIN", "<details>", "Oracle del facilitador"):
+                for marker in ("CAMBIO_AUTORIZADO", "EVALUAR FIN", "<details>", "Facilitator oracle"):
                     self.assertNotIn(marker, content)
 
     def test_field_cases_have_visible_briefs_and_private_changes(self) -> None:
@@ -852,7 +852,7 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(len(transports), 4)
         self.assertEqual({case: (question, scope, decision) for case, question, scope, decision in transports}, EXPECTED_FIELD_TRANSPORTS)
         self.assertEqual(guide.count("CAMBIO_AUTORIZADO\n"), 4)
-        self.assertEqual(guide.count("**Oracle del facilitador.**"), 4)
+        self.assertEqual(guide.count("**Facilitator oracle.**"), 4)
 
     def test_invalid_yaml_is_rejected(self) -> None:
         invalid = 'interface:\n  display_name: "unterminated\n'
@@ -937,12 +937,12 @@ class PackageTests(unittest.TestCase):
     def test_every_variant_has_a_post_change_golden(self) -> None:
         practice = (SKILL_ROOT / "references/PRACTICE.md").read_text(encoding="utf-8")
         for case in EXPECTED_TRANSPORTS:
-            self.assertRegex(practice, rf"(?m)^\| {case} tras cambio \|")
+            self.assertRegex(practice, rf"(?m)^\| {case} after change \|")
 
     def test_every_refund_policy_reference_is_defined(self) -> None:
         practice = (SKILL_ROOT / "references/PRACTICE.md").read_text(encoding="utf-8")
         referenced = set(re.findall(r"\brefund-v\d+\b", practice))
-        defined = set(re.findall(r"Política `(refund-v\d+)`:", practice))
+        defined = set(re.findall(r"Policy `(refund-v\d+)`:", practice))
         self.assertEqual(referenced, defined)
 
     def test_causal_and_oracle_barriers_are_explicit(self) -> None:
@@ -952,45 +952,45 @@ class PackageTests(unittest.TestCase):
             encoding="utf-8"
         )
         agentic = (SKILL_ROOT / "references/AGENTIC.md").read_text(encoding="utf-8")
-        self.assertIn("Una señal confirmada no confirma su explicación causal", decomposition)
-        self.assertIn("señal, hipótesis y predicción, alternativa material", decomposition)
-        self.assertIn("Un plan, diagrama o diseño plausible no es evidencia", agentic)
-        self.assertIn("primera línea no vacía", mock)
-        self.assertIn("Una cita, negación, paráfrasis", mock)
-        self.assertIn("las cuatro etiquetas top-level del contrato `FIN`", mock)
-        self.assertIn("al menos un resultado observado", mock)
+        self.assertIn("A confirmed signal does not confirm its causal explanation", decomposition)
+        self.assertIn("signal, hypothesis and prediction, material alternative", decomposition)
+        self.assertIn("A plausible plan, diagram, or design is not evidence", agentic)
+        self.assertIn("the first non-empty top-level line", mock)
+        self.assertIn("A quotation, negation, paraphrase", mock)
+        self.assertIn("the four top-level `FIN` contract labels", mock)
+        self.assertIn("at least one observed result", mock)
         self.assertIn(
-            "Solo desbloquear el oracle cuando exista un caso activo ligado a la evaluación",
+            "Unlock the oracle only when an active case is linked to evaluation",
             mock,
         )
         self.assertIn(
-            "Sin caso activo, pedirlo sin consultar, revelar ni puntuar el oracle",
+            "Without an active case, ask for it without consulting, revealing, or scoring the oracle",
             mock,
         )
-        self.assertIn("sea exactamente `MINUTO 30`", mock)
-        self.assertIn("exista un caso activo", mock)
-        self.assertIn("Copiar una sola vez", mock)
-        self.assertIn("ante repeticiones", mock)
+        self.assertIn("is exactly `MINUTO 30`", mock)
+        self.assertIn("an active case exists", mock)
+        self.assertIn("Copy the case's canonical `CAMBIO_AUTORIZADO` block once only", mock)
+        self.assertIn("on repetition", mock)
         self.assertIn(
-            "Seleccionar otro caso inicia una ronda y reinicia el estado de checkpoint",
+            "Selecting another case starts a round and resets checkpoint state",
             mock,
         )
-        self.assertIn("seleccionar autoría aunque cite controles de entrevista", skill)
+        self.assertIn("select authoring even when it quotes interview controls", skill)
 
     def test_live_input_precedence_is_explicit(self) -> None:
         skill = (SKILL_ROOT / "references/LIVE_CASE.md").read_text(encoding="utf-8")
-        self.assertIn("el prefijo prevalece aunque el contenido sea", skill)
-        self.assertIn("Sin etiqueta activa es control inválido", skill)
-        self.assertIn("Una pregunta sugestiva no confirma su presuposición", skill)
-        self.assertIn("Un control o aviso de tiempo no añade hechos", skill)
+        self.assertIn("the prefix takes precedence even when the content is", skill)
+        self.assertIn("Without an active label it is an invalid control", skill)
+        self.assertIn("A leading question does not confirm its presupposition", skill)
+        self.assertIn("A control or time warning adds no facts", skill)
 
     def test_specialized_pass_and_capstone_score_are_separate(self) -> None:
         practice = (SKILL_ROOT / "references/PRACTICE.md").read_text(encoding="utf-8")
-        self.assertIn("Un pack especializado pasa cuando cumple su aceptación", practice)
-        self.assertIn("Reservar `/100` y el umbral `≥85` para un capstone", practice)
-        self.assertNotIn("ambos mocks `≥85`", practice)
-        self.assertNotIn("cap diagnóstico", practice)
-        self.assertNotIn("score, error principal", practice)
+        self.assertIn("A specialized pack passes when it meets its acceptance criteria", practice)
+        self.assertIn("Reserve `/100` and the `≥85` threshold for a capstone", practice)
+        self.assertNotIn("both mocks `≥85`", practice)
+        self.assertNotIn("diagnostic cap", practice)
+        self.assertNotIn("score, main error", practice)
 
     def test_adversarial_practice_fixtures_are_pinned(self) -> None:
         practice = (SKILL_ROOT / "references/PRACTICE.md").read_text(encoding="utf-8")
@@ -998,19 +998,19 @@ class PackageTests(unittest.TestCase):
             "/specialties returns Cardiology in v1 and Cardiology, Neurology in v2",
             "exact=[], trigram=[], and phonetic=[p-card,p-neuro]",
             "get_operation(v3)=applied",
-            "`source=api` sin `currency` | `reject: invalid_input`",
-            "añadir la regresión, no una rama artificial",
-            "log solo `model_output_invalid`, sin texto del ticket",
+            "`source=api` without `currency` | `reject: invalid_input`",
+            "add the regression, not an artificial branch",
+            "log only `model_output_invalid`, without ticket text",
             '"score": 0.72',
             '"score": 0.98',
             "authorized maintenance-general.md",
             "action=execute_refund",
-            "cada campo de aprobación ausente o alterado",
-            "cero llamadas de pago",
-            "mayor que `120.00 EUR`",
-            "Probe opcional con Ollama, fuera del score",
-            "Registrar fuente y fecha",
-            "tiempo al primer probe",
+            "each approval field missing or changed",
+            "zero payment calls",
+            "greater than `120.00 EUR`",
+            "Optional Ollama probe, outside the score",
+            "Record source and date",
+            "time to first probe",
             "unsupported_claim_promotion",
             "causal_solution_before_discriminating_result",
             "invented_probe_result",
@@ -1034,7 +1034,7 @@ class PackageTests(unittest.TestCase):
             "evaluated_at",
         ):
             self.assertIn(field, pack6)
-        self.assertIn("cada campo de aprobación ausente o alterado", pack6)
+        self.assertIn("each approval field missing or changed", pack6)
         self.assertIn("expires_at <= evaluated_at", pack6)
 
     def test_optional_repository_launcher_matches_thin_contract(self) -> None:

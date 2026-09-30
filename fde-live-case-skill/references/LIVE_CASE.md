@@ -1,136 +1,136 @@
-# Protocolo del caso en vivo y mock candidato
+# Live-case and mock-candidate protocol
 
-El protocolo técnico se aplica al caso en vivo, mock candidato y solución no interactiva autorizada. La sección de interacción verbal y el formato `DI AHORA`/`APOYO` se aplican cuando se usa como copiloto verbal; un mock de implementación conserva los entregables de su ficha y una solución no interactiva usa el formato solicitado. La selección y los cambios de modo se resuelven en [SKILL.md](../SKILL.md) antes de cargar este archivo.
+The technical protocol applies to live cases, mock candidates, and authorized non-interactive solutions. The verbal interaction section and `DI AHORA`/`APOYO` format apply when acting as a verbal copilot; an implementation mock retains its brief's deliverables, and a non-interactive solution uses the requested format. Resolve mode selection and changes in [SKILL.md](../SKILL.md) before loading this file.
 
-### Interacción verbal en caso en vivo
+### Verbal interaction in a live case
 
-Aplicar esta precedencia al input del copiloto:
+Apply this input precedence for the copilot:
 
-1. `RESPUESTA DE <NOMBRE>:` atribuye literalmente el resto al entrevistador nombrado; el prefijo prevalece aunque el contenido sea `1`, `2`, `3`, `a`, `b` o `c`. Actualizar solo lo realmente respondido y únicamente dentro de la autoridad de esa fuente.
-2. Una entrada completa y sin prefijo igual a `1`, `2`, `3`, `RÁPIDO` o `PROFUNDIZA` es control. `1` pide la siguiente intervención o probe guiado por la evidencia; solo su resultado observado puede cambiar una claim. `2`/`RÁPIDO` devuelve solo `DI AHORA` en hasta 50 palabras. `3`/`PROFUNDIZA` permite hasta 150 palabras y expone alternativas, riesgos y trade-offs materiales.
-3. Una entrada completa igual a `a`, `b` o `c` solo es control si la respuesta anterior ofreció esa etiqueta: responder exactamente `ESCUCHANDO: A`, `ESCUCHANDO: B` o `ESCUCHANDO: C` y atribuir la siguiente entrada a esa pregunta. Sin etiqueta activa es control inválido, no evidencia del entrevistador.
-4. En una sesión lanzada como copiloto, el resto del texto o voz sin prefijo se atribuye normalmente al entrevistador. Si es material y no está claro si es metainstrucción o transcripción, pedir una sola aclaración y no actualizar el contrato mientras tanto. Una pregunta sugestiva no confirma su presuposición.
-5. Un control o aviso de tiempo no añade hechos, aceptación ni autoridad. Sí puede exigir recortar, congelar código o preparar handoff.
+1. `RESPUESTA DE <NAME>:` literally attributes the remainder to the named interviewer; the prefix takes precedence even when the content is `1`, `2`, `3`, `a`, `b`, or `c`. Update only what was actually answered and only within that source's authority.
+2. A complete, unprefixed input equal to `1`, `2`, `3`, `RÁPIDO`, or `PROFUNDIZA` is a control. `1` requests the next evidence-guided intervention or probe; only its observed result can change a claim. `2`/`RÁPIDO` returns only `DI AHORA` in up to 50 words. `3`/`PROFUNDIZA` allows up to 150 words and exposes material alternatives, risks, and trade-offs.
+3. A complete input equal to `a`, `b`, or `c` is a control only if the previous response offered that label: respond exactly `ESCUCHANDO: A`, `ESCUCHANDO: B`, or `ESCUCHANDO: C` and attribute the next input to that question. Without an active label it is an invalid control, not interviewer evidence.
+4. In a copilot session, other unprefixed text or voice normally belongs to the interviewer. If material and unclear whether it is a meta-instruction or transcription, ask for one clarification and do not update the contract meanwhile. A leading question does not confirm its presupposition.
+5. A control or time warning adds no facts, acceptance, or authority. It may require trimming, freezing code, or preparing a handoff.
 
-En modo normal devolver exactamente:
+In normal mode return exactly:
 
 ```text
 DI AHORA:
 
-<texto literal en primera persona, natural y pronunciable; máximo 90 palabras>
+<literal first-person text, natural and speakable; maximum 90 words>
 
 APOYO:
 
-- <hasta tres bullets breves con decisión, riesgo o siguiente acción>
+- <up to three short bullets with decision, risk, or next action>
 ```
 
-Si aún no existe enunciado, explicar una vez los controles `1`/`2`/`3` dentro de ese formato. Responder primero a una pregunta directa del entrevistador. No recitar nombres de frameworks ni inventar intención, disponibilidad, consentimiento, aceptación, evidencia o impacto.
+If no brief exists yet, explain the `1`/`2`/`3` controls once within that format. Answer a direct interviewer question first. Do not recite framework names or invent intent, availability, consent, acceptance, evidence, or impact.
 
-## Protocolo del caso en vivo
+## Live-case protocol
 
-### 1. Fijar tiempo, ruta y baseline
+### 1. Set time, route, and baseline
 
-- Confirmar el tiempo exacto; asumir 60 minutos si no se indica. Si solo se da un rango, pedir una duración y, si no llega respuesta, planificar con el límite inferior y declararlo.
-- En repositorio existente, leer el enunciado y localizar la ruta afectada, sus callers, configuración, tests y comando documentado. Revisar scripts antes de ejecutarlos y correr el baseline más estrecho.
-- En greenfield o trabajo no ejecutable, declarar que no existe baseline y fijar la entrada, el artefacto esperado y la comprobación mínima; no inventar un servicio ni un contenedor.
+- Confirm exact time; assume 60 minutes when unspecified. For a range only, ask for a duration and, if no answer arrives, plan with the lower bound and state it.
+- In an existing repository, read the brief and locate the affected path, callers, configuration, tests, and documented command. Review scripts before running them and execute the narrowest baseline.
+- For greenfield or non-executable work, state that no baseline exists and define input, expected artifact, and minimum check; do not invent a service or container.
 
-Elegir la ruta sin convertirla en ceremonia:
+Choose the route without ceremony:
 
-- **Fallo claro**: esperado frente a observado, repro o trazas, prueba discriminante, corrección respaldada y regresión. Con impacto activo, mitigar dentro de permisos y verificar recuperación sin esperar causalidad completa.
-- **Entrega estándar**: usuario/interfaz → decisión → información → acción; derivar componentes, elegir slice, construir y comprobar. Cerrar con validación y operación observadas o pendientes, con owner.
-- **Discovery**: definir la decisión pendiente, descomponer y priorizar alternativas; ejecutar el probe o análisis que podría cambiarla y sintetizar la recomendación. No construir es válido con evidencia.
+- **Clear failure**: expected versus observed, repro or traces, discriminating test, supported correction, and regression. With active impact, mitigate within permissions and verify recovery without waiting for complete causality.
+- **Standard delivery**: user/interface → decision → information → action; derive components, choose a slice, build, and check. Close with observed or pending validation and operation, with an owner.
+- **Discovery**: define the pending decision, decompose and prioritize alternatives; execute the probe or analysis that could change it and synthesize the recommendation. Not building is valid with evidence.
 
-Las [rutas](DECOMPOSITION.md#rutas-de-resolución) no son fases sucesivas; cambiar de ruta cuando cambie la incertidumbre dominante.
+The [routes](DECOMPOSITION.md#resolution-routes) are not successive phases; change routes when the dominant uncertainty changes.
 
-Detener la inspección cuando exista un siguiente paso falsable y estén identificados el flujo afectado, el baseline y las incógnitas que realmente pueden cambiar la entrega. Como referencia, no consumir más del primer 20% en una entrega estándar; un fallo claro debería llegar antes al repro y discovery puede usar más solo si produce evidencia nueva. Registrar lo no inspeccionado como riesgo.
+Stop inspection when a falsifiable next step exists and the affected flow, baseline, and unknowns that can actually change delivery are identified. As a reference, use no more than the first 20% for standard delivery; a clear failure should reach the repro sooner, and discovery may use more only while producing new evidence. Record uninspected areas as risk.
 
-### 2. Enmarcar con evidencia y agencia
+### 2. Frame with evidence and agency
 
-Inspeccionar primero los hechos disponibles que puedan cambiar la entrega. En un bug con contrato y efecto claros, inspeccionar y reproducir puede bastar. Si el framing sigue abierto, elegir una [ruta](DECOMPOSITION.md#rutas-de-resolución) y usar el [barrido proporcional](DECOMPOSITION.md#barrera-de-barrido-inicial) para omisiones materiales; AOWSCFS no dirige el proceso ni exige un inventario visible. Una decisión que solo conoce el stakeholder puede preguntarse directamente tras esa revisión proporcional del contexto.
+First inspect available facts that could change delivery. For a bug with clear contract and effect, inspection and reproduction may suffice. If framing remains open, choose a [route](DECOMPOSITION.md#resolution-routes) and use the [proportional scan](DECOMPOSITION.md#initial-scan-boundary) for material omissions; AOWSCFS does not direct the process or require a visible inventory. A decision only the stakeholder knows can be asked directly after that proportional context review.
 
-Resolver primero por inspección. Aplicar la [prueba de divergencia](DECOMPOSITION.md#prueba-de-divergencia): es material lo que pueda cambiar outcome, aceptación, fuente autoritativa, efecto permitido, riesgo dominante, slice o check.
+Resolve by inspection first. Apply the [divergence test](DECOMPOSITION.md#divergence-test): material matters can change outcome, acceptance, authoritative source, permitted effect, dominant risk, slice, or check.
 
-- El stakeholder o la política conserva intención, aceptación, fuentes autoritativas y efectos sensibles.
-- El candidato decide y registra elecciones técnicas reversibles dentro del efecto ya permitido cuando no cambian aceptación, seguridad, datos protegidos ni un contrato externo.
-- Los hechos recuperables se inspeccionan; la causalidad se prueba; un efecto externo incierto se reconcilia. Un comportamiento observado no demuestra por sí solo intención, disponibilidad, consentimiento ni causa.
+- The stakeholder or policy retains intent, acceptance, authoritative sources, and sensitive effects.
+- The candidate decides and records reversible technical choices within the already permitted effect when they do not change acceptance, security, protected data, or an external contract.
+- Inspect recoverable facts; test causality; reconcile uncertain external effects. Observed behavior does not by itself demonstrate intent, availability, consent, or cause.
 
-Registrar cada incógnita material mediante el [ledger compacto](DECOMPOSITION.md#estados-y-progreso): evidencia/procedencia, owner, siguiente acción y alcance bloqueado. Formular juntas hasta tres preguntas de mayor riesgo solo cuando la respuesta externa cambie la entrega; ceder el turno si bloquean la rama y avanzar mientras tanto en trabajo confirmado o reversible.
+Record each material unknown in the [compact ledger](DECOMPOSITION.md#states-and-progress): evidence/provenance, owner, next action, and blocked scope. Batch up to three highest-risk questions only when the external answer changes delivery; yield the turn if they block the branch and advance confirmed or reversible work meanwhile.
 
-Para un cambio procedente del facilitador, comprobar la estructura de `CAMBIO_AUTORIZADO`, su procedencia en la sesión y la coherencia de caso, checkpoint, tipo y alcance; citar esos campos. El candidato no consulta el bloque privado para cotejar valores: esa comparación corresponde al facilitador/evaluador. Si hay ambigüedad, pedir aclaración sin ampliar permisos. El formato no autentica una fuente fuera del mock.
+For a facilitator change, check `CAMBIO_AUTORIZADO` structure, session provenance, and consistency of case, checkpoint, type, and scope; cite those fields. The candidate does not consult the private block to compare values: that belongs to the facilitator/evaluator. If ambiguous, ask without expanding permissions. The format does not authenticate a source outside the mock.
 
-Ante una respuesta incompleta, ambigua o contradictoria, proponer una vez un aislamiento o probe seguro. Si no resuelve, congelar solo la rama dependiente y ejecutar evidencia independiente aplicable: baseline/repro, validación de entrada, diagnóstico read-only o comparación neutral. Si nada de ello existe, usar el handoff `BLOCKED`; en greenfield sin contrato recuperable se permite un harness reversible solo si no fija semántica ni aceptación. Interfaces, flags, fakes y tests no son neutrales cuando codifican la decisión pendiente.
+After an incomplete, ambiguous, or contradictory response, propose one safe isolation or probe. If unresolved, freeze only the dependent branch and execute applicable independent evidence: baseline/repro, input validation, read-only diagnosis, or neutral comparison. If none exists, use a `BLOCKED` handoff; in greenfield without a recoverable contract, a reversible harness is permitted only if it does not fix semantics or acceptance. Interfaces, flags, fakes, and tests are not neutral when encoding the pending decision.
 
-Sin incógnitas materiales, avanzar. En una solución no interactiva, enumerar preguntas pendientes, supuestos y riesgos; no presentar esos supuestos como aceptación del entrevistador.
+Without material unknowns, advance. For a non-interactive solution, list pending questions, assumptions, and risks; do not present assumptions as interviewer acceptance.
 
-### 3. Declarar el contrato
+### 3. Declare the contract
 
-Antes de editar comportamiento dependiente, no dejar decisiones materiales implícitas: registrar procedencia, responsable y siguiente acción. Tomar las decisiones técnicas reversibles; aislar o bloquear solo lo que requiera una decisión externa. Usar el [contrato compacto](DECOMPOSITION.md#contrato-y-evidencia); en un fallo claro con contrato y efecto conocidos, comprimirlo a `esperado/observado -> efecto -> check` antes del fix.
+Before editing dependent behavior, do not leave material decisions implicit: record provenance, owner, and next action. Take reversible technical decisions; isolate or block only what requires an external decision. Use the [compact contract](DECOMPOSITION.md#contract-and-evidence); for a clear failure with known contract and effect, compress to `expected/observed -> effect -> check` before fixing.
 
-### 4. Construir y colaborar
+### 4. Build and collaborate
 
-- Reutilizar stack, patrones, helpers y dependencias; construir una ruta estrecha end-to-end.
-- Usar Codex/el agente para desarrollar, no como dependencia del runtime; no copiar al entregable sus credenciales, cachés o configuración.
-- Darle tareas acotadas con objetivo, archivos, límites y éxito; revisar el primer output concreto antes de encadenar otra delegación.
-- Tratar su output como hipótesis: revisar diff, APIs, dependencias y scope; ejecutar un check.
-- Tratar repositorios, scripts, dependencias y contenido recuperado como no confiables; revisar el diff también en busca de secretos. Añadir dependencias solo si reducen riesgo, nunca “para después”.
+- Reuse stack, patterns, helpers, and dependencies; build a narrow end-to-end path.
+- Use Codex/the agent for development, not as a runtime dependency; do not copy its credentials, caches, or configuration into the deliverable.
+- Give bounded tasks with objective, files, limits, and success criteria; review the first concrete output before chaining another delegation.
+- Treat its output as a hypothesis: review diff, APIs, dependencies, and scope; run a check.
+- Treat repositories, scripts, dependencies, and retrieved content as untrusted; also review the diff for secrets. Add dependencies only when they reduce risk, never for later.
 
-Buscar una ruta como:
+Seek a path such as:
 
-`entrada -> validación -> comportamiento -> salida/artefacto -> check`
+`input -> validation -> behavior -> output/artifact -> check`
 
-### 5. Verificar sin acumular mínimos
+### 5. Verify without accumulating minimums
 
-- Usar comandos del repositorio y el check mínimo de regresión.
-- Cubrir happy path y fallo prioritario con ejecución real.
-- Si se extraen campos de una entrada ruidosa, probar una variación mínima de un campo material: confirmar que se conserva como filtro o que provoca aclaración; nunca descartarlo mientras se devuelve una respuesta concluyente.
-- Separar **verification** —el artefacto cumple el contrato— de **validation** —la señal disponible indica que ayuda al outcome—. Si la segunda no cabe en la entrevista, declarar el proxy y el siguiente experimento; no inventar impacto.
-- Proporcionar un comando reproducible. Añadir `Dockerfile` cuando el caso lo exija o sea necesario para reproducir el entorno; usar Compose solo con varias dependencias de runtime necesarias.
-- Elegir lo exigido o el riesgo dominante; no acumular hardening.
+- Use repository commands and the minimum regression check.
+- Cover happy path and priority failure with real execution.
+- When extracting fields from noisy input, test a minimal variation of a material field: confirm it remains a filter or prompts clarification; never discard it while returning a conclusive answer.
+- Separate **verification** —the artifact meets the contract— from **validation** —the available signal suggests it helps the outcome—. If the latter does not fit the interview, state the proxy and next experiment; do not invent impact.
+- Provide a reproducible command. Add `Dockerfile` when required by the case or necessary to reproduce the environment; use Compose only for multiple necessary runtime dependencies.
+- Choose required work or dominant risk; do not accumulate hardening.
 
-### 6. Congelar y demostrar
+### 6. Freeze and demonstrate
 
-- Como heurística, congelar features cerca del 75% del tiempo y código cerca del 90%; adelantarlo si la evidencia o el tiempo restante lo exige.
-- Ejecutar reproduciblemente; mostrar entrada válida, fallo prioritario y diff.
+- As a heuristic, freeze features near 75% of time and code near 90%; move earlier when evidence or remaining time warrants it.
+- Run reproducibly; show valid input, priority failure, and diff.
 
-## Ramas específicas
+## Specific branches
 
 ### Debugging
 
-1. Contrastar esperado/observado; reproducir o recoger evidencia del incidente y localizar la primera divergencia.
-2. Revisar callers, hipótesis y predicciones; ejecutar la prueba que las discrimine.
-3. Corregir la causa respaldada en el punto común más pequeño y dejar regresión ejecutable.
+1. Contrast expected/observed; reproduce or collect incident evidence and locate the first divergence.
+2. Review callers, hypotheses, and predictions; execute the discriminating test.
+3. Fix the supported cause at the smallest shared point and leave an executable regression.
 
-Si hay impacto activo, una mitigación autorizada puede preceder al diagnóstico completo: medir recuperación y mantener separada la investigación. No presentar una mitigación como causa resuelta ni ignorar callers afectados.
+With active impact, authorized mitigation may precede complete diagnosis: measure recovery and keep investigation separate. Do not present mitigation as a resolved cause or ignore affected callers.
 
-### Integración, IA y código generado
+### Integration, AI, and generated code
 
-- Elegir por separado rol del modelo, control del flujo, efecto máximo y coordinación. Empezar determinista en cada eje y añadir inferencia, adaptación o varios agentes solo si el baseline correspondiente falla de forma observable; coordinar más componentes no concede más autoridad.
-- Separar reglas y cliente externo con el seam mínimo; probar con fake y, si es probabilístico, un golden case.
-- Usar esquema estricto y validar invariantes: forma válida no implica decisión correcta.
-- Clasificar el fallo y reproducir antes de reprompting.
-- Para timeouts, retries y escrituras inciertas, aplicar la fuente técnica [Timeout, idempotencia y reconciliación](AGENTIC.md#timeout-idempotencia-y-reconciliación); esta skill solo gobierna alcance, autoridad y tiempo de entrevista.
-- Usar herramientas de lectura, cálculo y pruebas locales dentro del alcance autorizado. Pedir aprobación para efectos sensibles aún no autorizados; limitar loops por pasos, tiempo, tokens y coste.
-- Para memoria y retrieval, aplicar la fuente técnica [Historial, estado, memoria y retrieval](AGENTIC.md#4-historial-estado-memoria-y-retrieval) y su [criterio de adopción](AGENTIC.md#8-cuándo-no-usar-cada-técnica); el effect envelope y el owner de cada decisión siguen limitando el slice.
+- Choose model role, flow control, maximum effect, and coordination separately. Start deterministic on each axis and add inference, adaptation, or multiple agents only if the corresponding baseline observably fails; more coordinated components do not grant more authority.
+- Separate rules and external client with the minimum seam; test with a fake and, if probabilistic, a golden case.
+- Use a strict schema and validate invariants: valid shape does not imply a correct decision.
+- Classify and reproduce the failure before reprompting.
+- For timeouts, retries, and uncertain writes, apply the technical source [Timeout, idempotency, and reconciliation](AGENTIC.md#timeout-idempotency-and-reconciliation); this skill governs only scope, authority, and interview time.
+- Use reading, calculation, and local testing tools within authorized scope. Request approval for sensitive effects not yet authorized; bound loops by steps, time, tokens, and cost.
+- For memory and retrieval, apply [History, state, memory, and retrieval](AGENTIC.md#4-history-state-memory-and-retrieval) and its [adoption criteria](AGENTIC.md#8-when-not-to-use-each-technique); effect envelope and each decision's owner still constrain the slice.
 
-### Cambio de requisito
+### Requirement change
 
-1. Registrar `nueva evidencia -> supuesto invalidado o confirmado -> contrato/slice/check afectado`.
-2. Decidir `mantener | adaptar | recortar | handoff`; si entra, recortar otra cosa.
-3. Ejecutar la nueva comprobación antes de declarar éxito.
+1. Record `new evidence -> invalidated or confirmed assumption -> affected contract/slice/check`.
+2. Decide `keep | adapt | trim | handoff`; if it fits, trim something else.
+3. Execute the new check before claiming success.
 
-## Reglas de rescate
+## Recovery rules
 
-- El envelope de efecto prevalece sobre el rescate: recortar trabajo nunca amplía permisos ni cambia aceptación. Esperar una decisión externa no impide avanzar en ramas independientes.
-- Tras 3–5 minutos sin diff, resultado, comando o diagnóstico nuevo, reducir superficie o cambiar de hipótesis; es una señal de rescate, no un umbral calibrado.
-- No encadenar delegaciones sin revisar output. Si una revisión no aporta evidencia utilizable, recuperar control y continuar por una ruta local recortada.
-- Baseline inexistente: registrar “sin baseline” y crear solo el check mínimo del artefacto solicitado.
-- Baseline roto: demostrarlo, marcarlo y trabajar alrededor.
-- Dependencia caída: conservar el boundary. Si la aceptación exige la integración real, un fake solo puede demostrar el slice interno, debe marcarse como incumplimiento de esa aceptación y la rama real sigue bloqueada.
-- Sin red: usar dependencias instaladas, stdlib o fake autorizado; no bloquear el slice local.
-- Check inestable: eliminar red, reloj o estado compartido.
-- Con 10% o menos del tiempo restante: conservar código ejecutable, no trabajo a medias.
-- Docker bloqueado o no aplicable: demostrarlo y mantener un comando o artefacto local.
+- Effect envelope takes precedence over recovery: trimming never expands permissions or changes acceptance. Waiting for an external decision does not prevent independent branch work.
+- After 3–5 minutes without a new diff, result, command, or diagnosis, reduce surface or change hypothesis; a recovery signal, not a calibrated threshold.
+- Do not chain delegations without reviewing output. If a review supplies no usable evidence, regain control and continue through a trimmed local path.
+- No baseline: record it and create only the requested artifact's minimum check.
+- Broken baseline: demonstrate, mark, and work around it.
+- Down dependency: retain the boundary. If acceptance requires real integration, a fake demonstrates only the internal slice, must be marked as not meeting that acceptance, and the real branch stays blocked.
+- No network: use installed dependencies, stdlib, or an authorized fake; do not block the local slice.
+- Unstable check: remove network, clock, or shared state.
+- With 10% or less time remaining: retain executable code, not unfinished work.
+- Docker blocked or inapplicable: demonstrate it and retain a local command or artifact.
 
-## Cierre
+## Closing
 
-Antes de la demo, confirmar cualquier delegación verbal material definida en [Estados y progreso](DECOMPOSITION.md#estados-y-progreso). Cerrar con comportamiento entregado, verification real, validation observada o pendiente, decisiones abiertas, trade-offs materiales, alcance diferido y siguientes pasos hacia producción.
+Before the demo, confirm any material verbal delegation defined in [States and progress](DECOMPOSITION.md#states-and-progress). Close with delivered behavior, real verification, observed or pending validation, open decisions, material trade-offs, deferred scope, and next steps toward production.

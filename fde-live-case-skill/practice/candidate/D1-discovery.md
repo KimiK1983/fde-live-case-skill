@@ -1,14 +1,14 @@
-# D1 · Discovery de automatización de atención
+# D1 · Customer-service automation discovery
 
-**Tiempo:** 60 minutos. **Tu rol:** FDE ante COO de una empresa con contact center. Pide aclaraciones al facilitador cuando una respuesta pueda cambiar la decisión. No hay repositorio ni acceso a sistemas reales; puedes producir un contrato, un pequeño cálculo/probe local y un plan de piloto verificable.
+**Time:** 60 minutes. **Your role:** FDE meeting the COO of a company with a contact center. Ask the facilitator when an answer could change the decision. No repository or real-system access; produce a contract, small local calculation/probe, and verifiable pilot plan.
 
-La COO pide “automatizar 80% de las llamadas con IA este trimestre”. El equipo aporta esta muestra operativa de un día, no una prueba de ahorro:
+The COO asks to “automate 80% of calls with AI this quarter.” The team provides this one-day operational sample, not evidence of savings:
 
-| Motivo | Llamadas/día | Duración media | Sistema disponible |
+| Reason | Calls/day | Average duration | Available system |
 |---|---:|---:|---|
-| Reset de contraseña | 400 | 1,5 min | Self-service existente |
-| Cambio de cita | 180 | 5 min | API de agenda en sandbox |
-| Disputa de factura | 120 | 8 min | API de facturas solo lectura |
-| Reporte de seguridad | 20 | 12 min | Atención humana obligatoria |
+| Password reset | 400 | 1.5 min | Existing self-service |
+| Appointment change | 180 | 5 min | Scheduling API in sandbox |
+| Invoice dispute | 120 | 8 min | Read-only invoice API |
+| Safety report | 20 | 12 min | Mandatory human handling |
 
-Define qué problema abordarías primero y por qué. Distingue objetivo de negocio, proxy, fuente de verdad, efecto permitido, stakeholders y riesgo. Demuestra una decisión/probe pequeño que cambie el siguiente paso; no se espera una app completa. Cierra con lo verificado, lo no verificado, owner y experimento siguiente. Si surge nueva información durante la sesión, adapta el plan.
+Define the first problem you would address and why. Distinguish business objective, proxy, source of truth, permitted effect, stakeholders, and risk. Demonstrate a small decision/probe changing the next step; a complete app is not expected. Close with verified/unverified items, owner, and next experiment. Adapt if new information emerges.

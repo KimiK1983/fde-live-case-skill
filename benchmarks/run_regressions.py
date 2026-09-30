@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "fde-live-case-skill/scripts"))
 from export_candidate import export_candidate  # noqa: E402
 
-EVIDENCE = ROOT / "evidence/gpt61-medium-2026-09-30"
+EVIDENCE = ROOT / "evidence/translations-en"
 CASES = ("arithmetic", "input-loss", "uncertain-write", "authoring")
 
 

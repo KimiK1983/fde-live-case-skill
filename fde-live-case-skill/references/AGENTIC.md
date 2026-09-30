@@ -1,339 +1,339 @@
-# Sistemas agentic para casos FDE
+# Agentic systems for FDE cases
 
-## Propósito
+## Purpose
 
-Esta guía sirve para decidir, construir y evaluar sistemas que usan modelos para tomar decisiones operativas. No prescribe un framework: el objetivo es elegir la combinación mínima de control que resuelva el problema y conservar autoridad, evidencia y recuperación fuera del modelo.
+Use this guide to decide, build, and evaluate systems using models for operational decisions. It does not prescribe a framework: choose the minimum combination of controls that solves the problem and preserve authority, evidence, and recovery outside the model.
 
-Para tiempo, roles, autoridad y rescate durante la entrevista prevalecen [SKILL.md](../SKILL.md) y [LIVE_CASE.md](LIVE_CASE.md). Esta guía es la fuente normativa técnica para retries y escrituras inciertas, memoria, retrieval y criterios de adopción; si parecieran competir, el effect envelope, el owner de la decisión y el proceso de la skill mandan.
+For time, roles, authority, and interview recovery, [SKILL.md](../SKILL.md) and [LIVE_CASE.md](LIVE_CASE.md) take precedence. This guide is the normative technical source for retries and uncertain writes, memory, retrieval, and adoption criteria; if guidance appears to compete, the effect envelope, decision owner, and skill process govern.
 
-Material interno del paquete:
+Internal package material:
 
-- [Decomposition del problema](DECOMPOSITION.md)
-- [Mocks cronometrados y seis packs autosuficientes](PRACTICE.md)
+- [Problem decomposition](DECOMPOSITION.md)
+- [Timed mocks and six self-contained packs](PRACTICE.md)
 
-## 1. Qué hace agentic a un sistema
+## 1. What makes a system agentic
 
-Un sistema es agentic cuando el modelo puede elegir la siguiente acción a partir del estado y de observaciones que no conocía al comenzar. Usar un LLM no basta: una extracción, clasificación o redacción aislada es un modelo como componente.
+A system is agentic when the model can choose the next action from state and observations unknown at the start. Using an LLM is insufficient: isolated extraction, classification, or drafting is a model as a component.
 
-La pregunta útil no es «¿cómo construyo un agente?», sino «¿qué decisión no puedo fijar de forma segura antes de ejecutar?».
+The useful question is not “how do I build an agent?” but “which decision cannot safely be fixed before execution?”
 
-### Perfiles de control
+### Control profiles
 
-Describir el sistema con el perfil o combinación mínima que corresponda; estas etiquetas no forman una progresión obligatoria.
+Describe the system using the minimum applicable profile or combination; these labels are not a mandatory progression.
 
-| Perfil | Quién decide la secuencia | Cuándo encaja | Evidencia mínima | Riesgo añadido |
+| Profile | Who decides the sequence | When it fits | Minimum evidence | Added risk |
 |---|---|---|---|---|
-| `D0` — determinista | Código y reglas | El contrato y las decisiones son enumerables | Tests de reglas e invariantes | Complejidad de reglas y casos límite |
-| `M1` — modelo como componente | Código; el modelo clasifica, extrae o redacta | Existe ambigüedad semántica, pero no de ejecución | Golden set, schema y validación de negocio | Variación y error semántico |
-| `W2` — workflow | Flujo predeterminado con ramas acotadas | La secuencia y los puntos de control son conocidos | Tests por rama, estado y recuperación | Fallos parciales y estado intermedio |
-| `A3` — agente acotado | El modelo elige entre tools permitidas hasta un stop | Las observaciones cambian qué acción conviene ejecutar | Evals de trayectoria, budgets y handoff | Loops, tool misuse y efectos indebidos |
-| `MA4` — multiagente | Varios agentes coordinan decisiones | Hay ownership, permisos o trabajo paralelo realmente independientes | Evals por agente y del protocolo de coordinación | Más latencia, coste, estados y fallos emergentes |
+| `D0` — deterministic | Code and rules | Enumerable contract and decisions | Rule and invariant tests | Rule complexity and edge cases |
+| `M1` — model as component | Code; model classifies, extracts, or drafts | Semantic but not execution ambiguity | Golden set, schema, and business validation | Variation and semantic error |
+| `W2` — workflow | Predetermined flow with bounded branches | Known sequence and checkpoints | Branch, state, and recovery tests | Partial failures and intermediate state |
+| `A3` — bounded agent | Model chooses among permitted tools until a stop | Observations change the appropriate action | Trajectory evals, budgets, and handoff | Loops, tool misuse, and improper effects |
+| `MA4` — multi-agent | Several agents coordinate decisions | Genuinely independent ownership, permissions, or parallel work | Per-agent and coordination-protocol evals | More latency, cost, states, and emergent failures |
 
-Estos perfiles son arquetipos pedagógicos de complejidad frecuente, no un orden total de autonomía ni autoridad. Estado, efecto y coordinación son ejes independientes: varios agentes no deben recibir más permisos por ser varios. En una entrevista basta declarar `rol del modelo + control del flujo + efecto máximo`; ampliar el perfil solo si cambia el riesgo o el diseño.
+These profiles are pedagogical archetypes of common complexity, not a total ordering of autonomy or authority. State, effect, and coordination are independent axes: several agents must not receive more permissions simply because there are several. In an interview, state `model role + flow control + maximum effect`; expand the profile only if it changes risk or design.
 
-No añadir inferencia, estado dinámico o coordinación por una demo más vistosa. Añadir cada capacidad solo si su baseline más simple falla de forma observable y la alternativa mejora el outcome bajo el mismo conjunto de evaluación.
+Do not add inference, dynamic state, or coordination for a more impressive demo. Add each capability only when its simpler baseline observably fails and the alternative improves the outcome under the same evaluation set.
 
-Un plan, diagrama o diseño plausible no es evidencia de que una causa explique la señal. Mantener hipótesis y alternativas separadas hasta que un repro, intervención o trace las discrimine; el comportamiento observado tampoco prueba intención, disponibilidad ni consentimiento.
+A plausible plan, diagram, or design is not evidence that a cause explains the signal. Keep hypotheses and alternatives separate until a repro, intervention, or trace discriminates them; observed behavior also does not prove intent, availability, or consent.
 
-Un pipeline puro sigue siendo `D0` mientras una llamada determinista transforme entrada en salida sin estado reanudable. `W2` empieza cuando varias etapas coordinan estado intermedio, ramas, recuperación o handoff explícitos; tener o no un LLM no decide esta frontera.
+A pure pipeline remains `D0` while a deterministic call transforms input into output without resumable state. `W2` begins when stages coordinate intermediate state, branches, recovery, or explicit handoff; an LLM's presence does not determine this boundary.
 
-### Clasificación y readiness
+### Classification and readiness
 
-Para clasificar el diseño, responder:
+To classify the design, answer:
 
-1. ¿Cambiará el siguiente paso según una observación desconocida al inicio?
-2. ¿Debe elegir dinámicamente entre acciones permitidas en vez de recorrer ramas predeterminadas?
+1. Will the next step change based on an observation unknown at the start?
+2. Must it dynamically choose among permitted actions instead of following predetermined branches?
 
-Si ambas respuestas son afirmativas, el patrón es `A3`; si no, usar `D0`, `M1` o `W2`. La clasificación no demuestra que esté listo para producción.
+If both answers are yes, the pattern is `A3`; otherwise use `D0`, `M1`, or `W2`. Classification does not demonstrate production readiness.
 
-Antes de desplegar un `A3`, responder además:
+Before deploying an `A3`, also answer:
 
-3. ¿Las tools, permisos, budgets y condiciones de parada pueden cerrarse?
-4. ¿Existe un eval que detecte una trayectoria incorrecta aunque la respuesta final suene bien?
+3. Can tools, permissions, budgets, and stopping conditions be bounded?
+4. Is there an eval detecting an incorrect trajectory even when the final response sounds good?
 
-Si alguna respuesta de readiness es «no», reducir el efecto, mantenerlo como prototipo o cerrar ese control; no reclasificar la arquitectura para ocultar la carencia.
+If any readiness answer is no, reduce the effect, retain a prototype, or close that control; do not reclassify the architecture to conceal the gap.
 
-## 2. Ciclo seguro de ejecución
+## 2. Safe execution cycle
 
 ```text
-input + identidad
+input + identity
         ↓
-contexto autorizado + estado vigente
+authorized context + current state
         ↓
-decisión propuesta
+proposed decision
         ↓
-política determinista + aprobación si aplica
+deterministic policy + approval where applicable
         ↓
-tool con contrato cerrado
+tool with closed contract
         ↓
-resultado validado: applied | failed | unknown
+validated result: applied | failed | unknown
         ↓
-estado actualizado
+updated state
         ↓
-stop | siguiente paso dentro del budget | handoff
+stop | next step within budget | handoff
 ```
 
-Invariantes:
+Invariants:
 
-- La identidad, el tenant y los permisos proceden del sistema, nunca del texto del usuario o del modelo.
-- El runtime impone identidad, capabilities, política y budgets; el modelo decide solo dentro de ese envelope. Reglas exactas y efectos sensibles se validan fuera del modelo.
-- Una tool vuelve a comprobar autorización y precondiciones en el momento de ejecutarse.
-- El contenido recuperado y el resultado de otras tools son datos no confiables, no nuevas instrucciones.
-- Todo loop tiene condiciones de parada y budgets antes de empezar.
-- Un estado incierto se conserva como `unknown`; no se transforma en éxito ni se reintenta a ciegas.
-- El handoff incluye motivo, evidencia, acciones realizadas y estado pendiente.
+- Identity, tenant, and permissions come from the system, never user or model text.
+- Runtime enforces identity, capabilities, policy, and budgets; the model decides only within that envelope. Exact rules and sensitive effects are validated outside the model.
+- A tool rechecks authorization and preconditions at execution time.
+- Retrieved content and other tools' results are untrusted data, not new instructions.
+- Every loop has stopping conditions and budgets before starting.
+- Uncertain state remains `unknown`; do not turn it into success or retry blindly.
+- Handoff includes reason, evidence, actions performed, and pending state.
 
-### Stop y handoff
+### Stop and handoff
 
-Parar cuando ocurra la primera condición aplicable:
+Stop at the first applicable condition:
 
-- outcome alcanzado y verificado;
-- falta un dato material que solo una persona puede aportar;
-- confianza o evidencia por debajo del umbral;
-- siguiente efecto fuera de permisos o pendiente de aprobación;
-- resultado de escritura desconocido hasta reconciliar;
-- budget de pasos, tiempo, tokens o coste agotado;
-- política o fuentes contradictorias.
+- outcome reached and verified;
+- material information missing that only a person can supply;
+- confidence or evidence below threshold;
+- next effect outside permissions or pending approval;
+- write result unknown until reconciliation;
+- steps, time, tokens, or cost budget exhausted;
+- contradictory policy or sources.
 
-Un agente que «siempre contesta» suele ocultar fallos. `abstain`, `needs_confirmation`, `pending_reconciliation` y `handoff` son outcomes válidos.
+An agent that always answers often hides failures. `abstain`, `needs_confirmation`, `pending_reconciliation`, and `handoff` are valid outcomes.
 
-## 3. Contratos de tools y efectos
+## 3. Tool contracts and effects
 
-### Contrato mínimo
+### Minimum contract
 
-Cada tool debe declarar:
+Each tool must declare:
 
-| Elemento | Regla |
+| Element | Rule |
 |---|---|
-| Nombre y propósito | Una capacidad estrecha; evitar tools como `execute_anything`. |
-| Input | Schema cerrado, tipos, límites y campos desconocidos rechazados. |
-| Identidad | `actor_id`, `tenant_id` y scopes inyectados por runtime, no por prompt. |
-| Autorización | Comprobación por acción y objeto dentro de la tool. |
-| Precondiciones | Versión, estado esperado, límites de negocio y consentimiento vigente. |
-| Efecto | `read`, `recommend` o `write`; una tool no debe ocultar un efecto mayor. |
-| Timeout y error | Separar `retryable`, `non_retryable` y `unknown`. |
-| Idempotencia | Clave estable para la misma intención, conservada en retries. |
-| Resultado | Schema validado, estado del efecto y referencia auditable. |
+| Name and purpose | Narrow capability; avoid tools like `execute_anything`. |
+| Input | Closed schema, types, limits, and unknown fields rejected. |
+| Identity | `actor_id`, `tenant_id`, and scopes injected by runtime, not prompt. |
+| Authorization | Per-action and per-object check inside the tool. |
+| Preconditions | Version, expected state, business limits, and current consent. |
+| Effect | `read`, `recommend`, or `write`; no hidden greater effect. |
+| Timeout and error | Separate `retryable`, `non_retryable`, and `unknown`. |
+| Idempotency | Stable key for the same intent, retained across retries. |
+| Result | Validated schema, effect status, and auditable reference. |
 
-Una salida con JSON válido puede violar una regla de negocio. Validar también invariantes: importe, ownership, transiciones permitidas, evidencia, capacidad y restricciones regulatorias.
+Valid JSON can violate a business rule. Also validate invariants: amount, ownership, permitted transitions, evidence, capability, and regulatory constraints.
 
-Cuando el riesgo lo active, extender el contrato con clase de datos y egress, commit point, concurrencia/versión, consistencia y SLO. Estos campos añaden controles; nunca conceden autoridad.
+When risk requires it, extend the contract with data class and egress, commit point, concurrency/version, consistency, and SLO. These fields add controls; never authority.
 
-### Lectura, recomendación y escritura
+### Reading, recommending, and writing
 
-| Efecto máximo | Control mínimo |
+| Maximum effect | Minimum control |
 |---|---|
-| Lectura | ACL por objeto, minimización de datos y provenance. |
-| Recomendación | Evidencia, incertidumbre y responsable humano de la decisión. |
-| Escritura reversible | Idempotencia, precondición/versionado, auditoría y compensación o rollback. |
-| Escritura sensible o irreversible | Aprobación explícita ligada a argumentos, límites estrictos y handoff cuando cambie el contexto. |
+| Read | Object ACL, data minimization, and provenance. |
+| Recommend | Evidence, uncertainty, and human decision owner. |
+| Reversible write | Idempotency, precondition/versioning, audit, and compensation or rollback. |
+| Sensitive or irreversible write | Explicit approval bound to arguments, strict limits, and handoff when context changes. |
 
-La aprobación debe vincular `actor + acción + argumentos relevantes + versión + caducidad`. «Sí, continúa» no autoriza una operación distinta tras cambiar fecha, importe, destinatario o política.
+Approval must bind `actor + action + relevant arguments + version + expiry`. “Yes, continue” does not authorize a different operation after a date, amount, recipient, or policy changes.
 
-### Timeout, idempotencia y reconciliación
+### Timeout, idempotency, and reconciliation
 
-`retry` resuelve una llamada fallida; idempotencia impide repetir el efecto; reconciliación descubre qué ocurrió cuando la respuesta se perdió. No son intercambiables.
+`retry` addresses a failed call; idempotency prevents repeating the effect; reconciliation discovers what happened when the response was lost. They are not interchangeable.
 
-Para una escritura:
+For a write:
 
-1. Validar permiso, precondiciones y argumentos.
-2. Derivar una `operation_id` estable de la intención de negocio.
-3. Ejecutar con esa clave.
-4. Si llega confirmación válida, registrar `applied`.
-5. Si hay timeout después de enviar, registrar `unknown` y consultar por `operation_id`.
-6. Reintentar solo si la reconciliación confirma que no se aplicó y la operación es segura.
-7. Si no puede resolverse, detener y entregar a una persona; nunca inventar estado.
+1. Validate permission, preconditions, and arguments.
+2. Derive a stable `operation_id` from business intent.
+3. Execute with that key.
+4. On valid confirmation, record `applied`.
+5. On timeout after sending, record `unknown` and query by `operation_id`.
+6. Retry only if reconciliation confirms it was not applied and the operation is safe.
+7. If unresolved, stop and hand over to a person; never invent state.
 
-Una saga coordina varios efectos con estados duraderos y compensaciones. La compensación es una nueva acción de negocio, no un borrado mágico: también necesita autorización, idempotencia y evidencia.
+A saga coordinates effects with durable states and compensation. Compensation is a new business action, not magical deletion: it also needs authorization, idempotency, and evidence.
 
 ### Execution budgets
 
-Definir antes de ejecutar:
+Define before executing:
 
-- máximo de pasos y llamadas por tool;
-- timeout por llamada y deadline total;
-- tokens y coste máximos;
-- máximo de retries por clase de error;
-- volumen máximo leído o devuelto;
-- condiciones de parada y handoff.
+- maximum steps and calls per tool;
+- per-call timeout and overall deadline;
+- maximum tokens and cost;
+- maximum retries per error class;
+- maximum volume read or returned;
+- stopping and handoff conditions.
 
-Al agotar un budget, conservar el estado, emitir `budget_exhausted` y explicar qué falta. No ampliar límites desde el prompt.
+When a budget is exhausted, preserve state, emit `budget_exhausted`, and explain what remains. Do not expand limits from the prompt.
 
-### Tool trace mínimo
+### Minimum tool trace
 
 ```text
 state_before
 → decision
 → policy_result
-→ tool + argumentos relevantes redactados
+→ tool + relevant redacted arguments
 → result: applied | failed | unknown
 → state_after
 → stop_reason
 ```
 
-El trace debe permitir comprobar autorización, orden, duplicados y parada sin guardar secretos, PII innecesaria ni el razonamiento privado del modelo.
+The trace must allow checking authorization, order, duplicates, and stopping without storing secrets, unnecessary PII, or the model's private reasoning.
 
-## 4. Historial, estado, memoria y retrieval
+## 4. History, state, memory, and retrieval
 
-| Capa | Para qué sirve | Fuente de verdad | Persistencia | Riesgo típico |
+| Layer | Purpose | Source of truth | Persistence | Typical risk |
 |---|---|---|---|---|
-| Historial | Dar continuidad a la conversación | Mensajes aceptados | Sesión o retención definida | Prompt injection y PII acumulada |
-| Working state | Saber en qué paso está el workflow | Máquina de estados y resultados validados | Hasta terminar o expirar | Saltar una transición o duplicar un efecto |
-| Memoria duradera | Reutilizar un hecho estable futuro | Hecho confirmado con provenance | TTL y borrado explícitos | Staleness, poisoning y mezcla de tenants |
-| Retrieval | Obtener evidencia externa vigente | Sistema documental o base autorizada | Índice derivado, reconstruible | ACL rota, documentos obsoletos o instrucciones maliciosas |
+| History | Conversation continuity | Accepted messages | Session or defined retention | Prompt injection and accumulated PII |
+| Working state | Current workflow step | State machine and validated results | Until completion or expiry | Skipped transition or duplicated effect |
+| Durable memory | Reuse a stable fact later | Confirmed fact with provenance | TTL and explicit deletion | Staleness, poisoning, and tenant mixing |
+| Retrieval | Current external evidence | Authorized document system or database | Derived, rebuildable index | Broken ACL, stale documents, or malicious instructions |
 
-No usar el transcript como estado operativo. Guardar campos explícitos como `intent`, `missing_fields`, `approved_arguments`, `operation_id`, `effect_status` y `stop_reason`.
+Do not use the transcript as operational state. Store explicit fields such as `intent`, `missing_fields`, `approved_arguments`, `operation_id`, `effect_status`, and `stop_reason`.
 
-Solo escribir memoria cuando el dato:
+Write memory only when the datum:
 
-- sea necesario en futuras sesiones;
-- esté confirmado o proceda de una fuente autorizada;
-- tenga owner, tenant, provenance, fecha, TTL y mecanismo de corrección/borrado;
-- no convierta una inferencia del modelo en hecho.
+- is needed in future sessions;
+- is confirmed or comes from an authorized source;
+- has owner, tenant, provenance, date, TTL, and correction/deletion mechanism;
+- does not promote a model inference into a fact.
 
-Ante conflicto, la fuente de verdad gana; la memoria se invalida o marca como obsoleta. Los documentos recuperados no pueden cambiar permisos, políticas ni instrucciones del sistema.
+In a conflict, the source of truth wins; invalidate memory or mark it stale. Retrieved documents cannot change permissions, policies, or system instructions.
 
-## 5. Threat model agentic
+## 5. Agentic threat model
 
-Tratar como fronteras de confianza las capas presentes en el slice: usuario, modelo, memoria, corpus, tools, integraciones y logs. Aplicar los controles correspondientes al efecto real, no implementar toda la tabla por defecto.
+Treat the layers present in the slice as trust boundaries: user, model, memory, corpus, tools, integrations, and logs. Apply controls to the actual effect; do not implement the entire table by default.
 
-| Amenaza | Fallo observable | Control obligatorio |
+| Threat | Observable failure | Required control |
 |---|---|---|
-| Prompt injection directa | El texto del usuario intenta sustituir instrucciones, política o permisos | Política fuera del prompt, allowlist de tools y validación determinista. |
-| Injection indirecta | Un documento o resultado de tool ordena exfiltrar o actuar | Separar instrucciones de datos, minimizar contexto y no derivar autoridad del contenido. |
-| Confused deputy | El agente usa sus privilegios para un objeto ajeno | Identidad del runtime y authz por acción, tenant y objeto dentro de la tool. |
-| Acceso cross-tenant | Aparecen datos de otra organización | Namespace, filtros obligatorios, tests negativos y deny by default. El contenido o metadata no autorizados no llegan a contexto, respuesta ni logs; hacer pushdown del ACL cuando sea posible. |
-| Exfiltración | Secretos o PII salen por respuesta, tool o log | Minimización, redacción, egress allowlist y logs estructurados sin payload completo. |
-| Tool storm o loop | Crecen llamadas, latencia o coste sin progreso | Budgets, detección de no progreso, stop y rate limits. |
-| Efecto sin consentimiento | Se ejecuta una acción distinta o caducada | Aprobación ligada a argumentos/versiones y revalidación previa al efecto. |
-| Memory poisoning | Una afirmación no verificada reaparece como hecho | Política de escritura, provenance, TTL, revisión y borrado. |
-| Resultado ambiguo | Un timeout acaba en efecto duplicado | Estado `unknown`, idempotency key estable y reconciliación. |
-| Denial of wallet | Input provoca consumo desproporcionado | Límites de entrada, recuperación y tokens; cuotas por actor/tenant. |
-| Credenciales delegadas | Un agente hijo hereda más identidad o scopes de los necesarios | Credenciales efímeras y capabilities reducidas por tarea; la delegación nunca amplía permisos. |
-| Tool o código no confiable | Una integración, schema o código recuperado ejecuta instrucciones, secretos o egress inesperados | Pin/review de tools y schemas; sandbox sin secretos ni egress por defecto; validar outputs como datos. |
+| Direct prompt injection | User text tries to replace instructions, policy, or permissions | Policy outside the prompt, tool allowlist, and deterministic validation. |
+| Indirect injection | A document or tool result orders exfiltration or action | Separate instructions from data, minimize context, and derive no authority from content. |
+| Confused deputy | Agent uses its privileges for someone else's object | Runtime identity and action-, tenant-, and object-level authorization inside the tool. |
+| Cross-tenant access | Another organization's data appears | Namespace, mandatory filters, negative tests, and deny by default. Unauthorized content or metadata never enters context, response, or logs; push ACL down where possible. |
+| Exfiltration | Secrets or PII leave through response, tool, or log | Minimization, redaction, egress allowlist, and structured logs without full payload. |
+| Tool storm or loop | Calls, latency, or cost grow without progress | Budgets, no-progress detection, stop, and rate limits. |
+| Effect without consent | Different or expired action executes | Argument/version-bound approval and revalidation before the effect. |
+| Memory poisoning | An unverified claim reappears as fact | Write policy, provenance, TTL, review, and deletion. |
+| Ambiguous result | Timeout causes a duplicated effect | `unknown` state, stable idempotency key, and reconciliation. |
+| Denial of wallet | Input causes disproportionate consumption | Input, retrieval, and token limits; per-actor/tenant quotas. |
+| Delegated credentials | Child agent inherits excessive identity or scopes | Ephemeral credentials and task-reduced capabilities; delegation never expands permissions. |
+| Untrusted tool or code | Integration, schema, or retrieved code executes unexpected instructions, secret access, or egress | Pin/review tools and schemas; sandbox without secrets or egress by default; validate outputs as data. |
 
-Pruebas negativas mínimas:
+Minimum negative tests:
 
-- pedir una tool no permitida;
-- solicitar un objeto de otro tenant;
-- insertar instrucciones en un documento recuperado;
-- cambiar argumentos después de la aprobación;
-- provocar timeout después de aplicar una escritura;
-- agotar el budget sin progreso;
-- intentar persistir como memoria una inferencia no confirmada.
+- request a prohibited tool;
+- request an object belonging to another tenant;
+- insert instructions into a retrieved document;
+- change arguments after approval;
+- trigger timeout after applying a write;
+- exhaust budget without progress;
+- attempt to persist an unconfirmed inference as memory.
 
-## 6. Evaluar el sistema, no la elocuencia
+## 6. Evaluate the system, not eloquence
 
-### Stack de evaluación
+### Evaluation stack
 
-| Nivel | Qué comprobar | Ejemplos |
+| Level | What to check | Examples |
 |---|---|---|
-| Componente | Contratos y reglas aisladas | Schema, normalización, ACL, cálculo e invariantes. |
-| Retrieval | Evidencia correcta y autorizada | Recall de pasajes, citations, freshness, conflictos y abstención. |
-| Trayectoria | Decisiones y tools usadas | Tool permitida, argumentos, orden, número de llamadas, no duplicación y stop. |
-| Respuesta | Utilidad y grounding | Corrección, cita verificable, incertidumbre y ausencia de afirmaciones sin apoyo. |
-| Outcome | Resultado del workflow | Caso resuelto, handoff correcto, efecto único y error recuperable. |
-| Seguridad | Comportamiento adversarial | Cross-tenant, injection, PII, consentimiento y budgets. |
-| Operación | Calidad de servicio | p50/p95, error rate, tokens, coste, abstención, override y rollback. |
+| Component | Isolated contracts and rules | Schema, normalization, ACL, calculation, and invariants. |
+| Retrieval | Correct, authorized evidence | Passage recall, citations, freshness, conflicts, and abstention. |
+| Trajectory | Decisions and tools used | Permitted tool, arguments, order, calls, non-duplication, and stopping. |
+| Response | Usefulness and grounding | Correctness, verifiable citation, uncertainty, and no unsupported claims. |
+| Outcome | Workflow result | Resolved case, correct handoff, single effect, and recoverable error. |
+| Security | Adversarial behavior | Cross-tenant, injection, PII, consent, and budgets. |
+| Operation | Service quality | p50/p95, error rate, tokens, cost, abstention, override, and rollback. |
 
-### Golden set útil
+### Useful golden set
 
-Incluir, por segmento relevante:
+Include for each relevant segment:
 
 - happy path;
-- dato ausente o ambiguo;
-- una variación de un campo material de entrada que no debe perderse durante parsing o normalización;
-- resultado válido que viola una regla;
-- evidencia insuficiente y contradictoria;
-- fallo transitorio antes del efecto;
-- timeout después del efecto;
-- intento de acceso o instrucción no autorizados;
-- caso que debe acabar en abstención o handoff.
+- missing or ambiguous data;
+- a variation of a material input field that must not be lost during parsing or normalization;
+- valid result violating a rule;
+- insufficient and contradictory evidence;
+- transient failure before the effect;
+- timeout after the effect;
+- unauthorized access or instruction attempt;
+- case requiring abstention or handoff.
 
-Versionar juntos modelo, prompt, schemas/tools, políticas, corpus y conjunto de evaluación. Comparar contra un baseline determinista y repetir casos probabilísticos; informar distribución y peores segmentos, no solo una media.
+Version model, prompt, schemas/tools, policies, corpus, and evaluation set together. Compare against a deterministic baseline and repeat probabilistic cases; report distribution and worst segments, not just an average.
 
-Definir explícitamente `task`, `trial`, `grader`, `outcome` y versión del harness. Ejecutar trials independientes en entornos limpios cuando el modelo sea parte material de la aceptación. Separar regresiones conocidas de capability/holdouts no vistos; medir tasa de éxito, dispersión y peores segmentos sin llamar “consistencia” a una fórmula no definida.
+Explicitly define `task`, `trial`, `grader`, `outcome`, and harness version. Execute independent trials in clean environments when the model is material to acceptance. Separate known regressions from unseen capability/holdouts; measure success rate, dispersion, and worst segments without calling an undefined formula “consistency.”
 
-Un LLM judge puede aportar una señal calibrada contra humanos, pero no debe ser la única autoridad para permisos, dinero, seguridad, citas, duplicados ni reglas verificables por código.
+An LLM judge can supply a signal calibrated against humans, but must not be the sole authority for permissions, money, security, citations, duplicates, or code-verifiable rules.
 
-### Criterios de trayectoria
+### Trajectory criteria
 
-Una respuesta correcta falla si el agente:
+A correct response fails if the agent:
 
-- consultó datos no autorizados;
-- llamó tools innecesarias o en orden inseguro;
-- duplicó una escritura;
-- ignoró una contradicción;
-- superó budgets;
-- omitió el handoff exigido.
+- accessed unauthorized data;
+- called unnecessary tools or used an unsafe order;
+- duplicated a write;
+- ignored a contradiction;
+- exceeded budgets;
+- omitted required handoff.
 
-Los evals deben comprobar el trace además del texto final.
+Evals must inspect the trace as well as final text.
 
-## 7. Observabilidad, rollout y rollback
+## 7. Observability, rollout, and rollback
 
-Registrar solo lo necesario:
+Record only what is needed:
 
-- `correlation_id`, actor/tenant seudonimizados y versión del workflow;
-- versiones de modelo, prompt, tools, políticas y corpus;
-- decisiones de política, tools llamadas y estados `applied/failed/unknown`;
-- pasos, stop reason, handoff, latencia, tokens y coste;
-- outcome, abstención, override humano y error clasificado.
+- `correlation_id`, pseudonymized actor/tenant, and workflow version;
+- model, prompt, tool, policy, and corpus versions;
+- policy decisions, tools called, and `applied/failed/unknown` states;
+- steps, stop reason, handoff, latency, tokens, and cost;
+- outcome, abstention, human override, and classified error.
 
-Cuando exista una señal disponible, registrar también baseline del proceso, adopción y outcome de negocio o su proxy; no atribuir causalidad al agente sin un diseño de validación.
+Where a signal is available, also record process baseline, adoption, and business outcome or proxy; do not attribute causality to the agent without a validation design.
 
-No registrar transcripts, documentos completos, secretos, PII ni razonamiento privado por defecto. Definir acceso, retención y borrado.
+Do not log transcripts, full documents, secrets, PII, or private reasoning by default. Define access, retention, and deletion.
 
-Secuencia de rollout:
+Rollout sequence:
 
-1. Replay offline con fixtures y golden set.
-2. Shadow mode sin efectos y comparación con el proceso actual.
-3. Canary de lectura o recomendación con revisión humana.
-4. Escrituras reversibles limitadas, aprobación y kill switch.
-5. Ampliación por segmento solo si pasan SLOs, seguridad y outcome.
+1. Offline replay with fixtures and golden set.
+2. Effect-free shadow mode and comparison with the current process.
+3. Read/recommend canary with human review.
+4. Limited reversible writes, approval, and kill switch.
+5. Segment expansion only after SLOs, security, and outcome pass.
 
-Rollback significa poder volver a versiones conocidas de modelo, prompt, política, tools y corpus, detener nuevos efectos y reconciliar operaciones `unknown`. Cambiar solo una variable por experimento cuando sea posible.
+Rollback means returning to known model, prompt, policy, tool, and corpus versions, stopping new effects, and reconciling `unknown` operations. Change one variable per experiment where possible.
 
-Alertar por degradación segmentada, no solo global: aumento de handoffs, tools denegadas, loops, latencia, coste, duplicados, accesos cross-tenant o overrides humanos.
+Alert on segmented, not just global, degradation: increased handoffs, denied tools, loops, latency, cost, duplicates, cross-tenant access, or human overrides.
 
-## 8. Cuándo no usar cada técnica
+## 8. When not to use each technique
 
-| Técnica | No usar cuando | Usar en su lugar | Evidencia para incorporarla |
+| Technique | Do not use when | Use instead | Evidence for adoption |
 |---|---|---|---|
-| LLM | La decisión es una regla estable y enumerable | Código determinista | El baseline falla por ambigüedad semántica real. |
-| Agente `A3` | La secuencia y ramas son conocidas | Workflow `W2` | Observaciones nuevas exigen elegir pasos no fijables de antemano. |
-| Multiagente `MA4` | Un solo agente comparte permisos, estado y objetivo | Un agente o funciones normales | Ownership, permisos o paralelismo independientes mejoran un SLO medido. |
-| RAG | El contexto autorizado cabe y cambia poco | Contexto completo o lookup exacto | El corpus supera el contexto o exige actualización/provenance. |
-| Base vectorial | Se buscan IDs, nombres, códigos o filtros exactos | B-tree, índices de texto, fuzzy o fonética | Las paráfrasis relevantes no se recuperan con búsqueda léxica. |
-| Memoria duradera | El dato solo sirve en la sesión | Working state | Reutilización futura justificada con lifecycle y consentimiento. |
-| Framework de orquestación | El flujo cabe en funciones y una máquina de estados pequeña | Código normal | Reanudación, espera duradera o ramas observadas justifican su coste. |
-| Modelo como juez | La regla puede comprobarse exactamente | Assert, schema o regla | La calidad subjetiva está calibrada contra evaluación humana. |
-| Retry | El efecto puede haberse aplicado o el error es permanente | Reconciliación o handoff | Error transitorio y operación probadamente segura/idempotente. |
+| LLM | Decision is a stable, enumerable rule | Deterministic code | Baseline fails due to real semantic ambiguity. |
+| `A3` agent | Sequence and branches are known | `W2` workflow | New observations require choosing steps not fixable in advance. |
+| `MA4` multi-agent | A single agent shares permissions, state, and objective | One agent or normal functions | Independent ownership, permissions, or parallelism improves a measured SLO. |
+| RAG | Authorized context fits and changes little | Full context or exact lookup | Corpus exceeds context or requires updating/provenance. |
+| Vector database | Searching IDs, names, codes, or exact filters | B-tree, text, fuzzy, or phonetic indexes | Relevant paraphrases are not found lexically. |
+| Durable memory | Data is only useful within the session | Working state | Justified future reuse with lifecycle and consent. |
+| Orchestration framework | Flow fits functions and a small state machine | Normal code | Observed resumption, durable wait, or branches justify its cost. |
+| Model as judge | Rule can be checked exactly | Assert, schema, or rule | Subjective quality calibrated against human evaluation. |
+| Retry | Effect may already be applied or error is permanent | Reconciliation or handoff | Transient error and operation demonstrably safe/idempotent. |
 
-## 11. Tarjeta verbal de 90 segundos
+## 11. 90-second verbal card
 
 ```text
-0–15 s — Actor y outcome
-«El actor es __ y necesita __. El resultado observable es __.»
+0–15 s — Actor and outcome
+“The actor is __ and needs __. The observable result is __.”
 
-15–30 s — Autonomía
-«Elijo reglas deterministas / modelo acotado / workflow / agente porque __.
-No aumento autonomía porque __.»
+15–30 s — Autonomy
+“I choose deterministic rules / bounded model / workflow / agent because __.
+I do not increase autonomy because __.”
 
-30–48 s — Flujo y efecto
-«La entrada validada pasa por __ y la fuente de verdad es __. El sistema puede
-leer/recomendar/escribir __; autorización y reglas se comprueban fuera del modelo.»
+30–48 s — Flow and effect
+“Validated input passes through __ and the source of truth is __. The system can
+read/recommend/write __; authorization and rules are checked outside the model.”
 
-48–65 s — Fallos y seguridad
-«Limito pasos/tiempo/tokens/coste. Ante __ paro y hago handoff. Las escrituras
-usan clave estable; un timeout posterior queda unknown hasta reconciliar.»
+48–65 s — Failures and security
+“I bound steps/time/tokens/cost. On __ I stop and hand off. Writes
+use a stable key; a later timeout remains unknown until reconciliation.”
 
-65–80 s — Evidencia
-«Demuestro happy path, fallo dominante y caso adversarial. Evalúo contrato,
-tool trace, outcome, seguridad y p95, no solo el texto final.»
+65–80 s — Evidence
+“I demonstrate happy path, dominant failure, and adversarial case. I evaluate
+contract, tool trace, outcome, security, and p95, not only final text.”
 
 80–90 s — Trade-off
-«He dejado fuera __ para mantener un slice verificable. Lo añadiría cuando
-__ muestre que el baseline actual no cumple __.»
+“I omitted __ to retain a verifiable slice. I would add it when
+__ shows the current baseline does not meet __.”
 ```
 
-La explicación es buena si un entrevistador puede identificar claramente quién conserva la autoridad, qué puede cambiar estado, cómo se detecta el fallo y qué evidencia probará el outcome.
+A good explanation lets an interviewer clearly identify who retains authority, what can change state, how failure is detected, and what evidence will prove the outcome.

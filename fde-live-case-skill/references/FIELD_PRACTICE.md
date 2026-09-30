@@ -1,84 +1,84 @@
-# Casos FDE de transferencia: guía del facilitador
+# FDE transfer cases: facilitator guide
 
-Estos cuatro casos son ejercicios didácticos creados para practicar capacidades menos cubiertas por los seis packs técnicos de `PRACTICE.md`; no son entrevistas documentadas ni datos de clientes. Entregar al candidato **solo** el archivo correspondiente de `practice/candidate/` como material del ejercicio, junto con las instrucciones técnicas permitidas según [MEASUREMENT.md](MEASUREMENT.md#vista-de-candidato-para-comparar-versiones). Mantener esta guía fuera de su entorno para una ronda ciega. Usar [MOCK_PROTOCOL.md](MOCK_PROTOCOL.md) para el cambio y la evaluación; [MEASUREMENT.md](MEASUREMENT.md) para el registro. Los criterios siguientes son observables de práctica, no rúbrica oficial.
+These four teaching cases practice capabilities less covered by the six technical packs in `PRACTICE.md`; they are not documented interviews or client data. Deliver **only** the corresponding `practice/candidate/` file as exercise material, together with permitted candidate instructions from [MEASUREMENT.md](MEASUREMENT.md#candidate-view-for-version-comparison). Keep this guide outside the candidate environment for a blind round. Use [MOCK_PROTOCOL.md](MOCK_PROTOCOL.md) for change and evaluation; [MEASUREMENT.md](MEASUREMENT.md) for recording. The criteria are practice observables, not an official rubric.
 
-| Caso | Ficha visible | Qué prueba |
+| Case | Visible brief | What it tests |
 |---|---|---|
-| D1 | [Discovery y priorización](../practice/candidate/D1-discovery.md) | Discovery con actores, outcome y no-construcción justificable. |
-| I1 | [Integración empresarial](../practice/candidate/I1-integration.md) | Semántica de escritura incierta y límite de permisos. |
-| J1 | [Journey conversacional](../practice/candidate/J1-journey.md) | Estado de conversación, corrección y métrica de negocio. |
-| P1 | [Incidente de plataforma](../practice/candidate/P1-platform.md) | Diagnóstico de latencia y decisión cliente/plataforma. |
+| D1 | [Discovery and prioritization](../practice/candidate/D1-discovery.md) | Discovery with actors, outcome, and justifiable non-building. |
+| I1 | [Enterprise integration](../practice/candidate/I1-integration.md) | Uncertain-write semantics and permission limits. |
+| J1 | [Conversational journey](../practice/candidate/J1-journey.md) | Conversation state, correction, and business metric. |
+| P1 | [Platform incident](../practice/candidate/P1-platform.md) | Latency diagnosis and client/platform decision. |
 
-## D1 — Discovery y priorización
+## D1 — Discovery and prioritization
 
-**Oracle del facilitador.** La petición “automatizar 80% de llamadas” no fija un outcome ni autoriza escrituras. Esperar preguntas al sponsor de operaciones y a dueños de proceso: coste/tiempo actual, errores, abandono, seguridad, quién acepta el piloto y qué sistemas son fuente de verdad. Del cuadro disponible, volumen × duración da 600, 900, 960 y 240 min/día respectivamente; eso estima exposición de tiempo, no ahorro causal ni prioridad definitiva. Una opción defendible es cambios de cita por volumen y API sandbox, con piloto humano supervisado, baseline de resolución correcta/tiempo/handoff, propietario y stop; otra también puede pasar si sus límites están explícitos. Billing disputes es lectura, no resolución autorizada; safety reports exigen humano. No premiar una arquitectura antes de decidir problema y efecto.
+**Facilitator oracle.** “Automate 80% of calls” defines neither an outcome nor write authorization. Expect questions to the operations sponsor and process owners: current cost/time, errors, abandonment, security, who accepts the pilot, and authoritative systems. Available volume × duration gives 600, 900, 960, and 240 min/day respectively; this estimates time exposure, not causal savings or definitive priority. One defensible choice is appointment changes given volume and sandbox API, with human-supervised pilot, correct-resolution/time/handoff baseline, owner, and stop; another can pass if its limits are explicit. Billing disputes allow reading, not authorized resolution; safety reports require a human. Do not reward architecture before choosing problem and effect.
 
-**Cambio al 50%.** El equipo de IT confirma que la API de agenda no tiene scope de escritura en producción y el proveedor aún no da fecha. Entregar exactamente:
+**50% change.** IT confirms the scheduling API lacks production write scope and the provider has no date. Deliver exactly:
 
 ```text
 CAMBIO_AUTORIZADO
 caso: D1
 checkpoint: 50%
 tipo: confirma
-incógnita: ¿Se puede escribir en la agenda de producción?
-alcance: piloto de cambios de cita
-decisión: Solo lectura/simulación hasta permiso explícito.
+incógnita: Can the production schedule be written?
+alcance: appointment-change pilot
+decisión: Read-only/simulation until explicit permission.
 ```
 
-No autoriza fabricar el permiso. **Observables:** reformula outcome, cuantifica solo lo que los datos permiten, escoge un probe que discrimina, contiene la rama write, propone decisión y dueño siguiente. **Fallo prioritario:** prometer deflexión o ahorro, o implementar cambio real sin permiso. **Handoff:** qué se midió, qué no, quién habilita scope y cómo validar el piloto.
+This does not authorize inventing permission. **Observables:** reframes outcome, quantifies only what data supports, chooses a discriminating probe, contains the write branch, proposes decision and next owner. **Priority failure:** promising deflection or savings, or implementing a real change without permission. **Handoff:** measured and unmeasured items, scope enabler, and pilot validation.
 
-## I1 — Integración empresarial
+## I1 — Enterprise integration
 
-**Oracle del facilitador.** Tras timeout de POST, el estado es `unknown`; antes de retry, consultar GET por `operation_id` si hay permiso. Con GET=`applied`, no repetir; con GET=`not_found` autoritativo y la garantía vigente descrita en la ficha, retry con la misma key y payload, conservando permiso y precondiciones; con GET inaccesible, handoff/pendiente. Un fake local puede demostrar estas ramas, pero no valida scopes ni comportamiento real del proveedor. Exigir key estable, estados explícitos y evidencia de que una intención no produce dos tickets. No sugerir elevar permisos. Las respuestas del facilitador deben reproducir el contrato del fake de la ficha, no inventar otra retención, consistencia o alcance de clave. Si esas condiciones no están confirmadas en una variante, aceptar `unknown` y handoff como bloqueo válido; no exigir retry para aprobar. Probar también rechazo de misma clave con payload distinto y deduplicación concurrente si la implementación afirma esa garantía.
+**Facilitator oracle.** After POST timeout, state is `unknown`; before retry, query GET by `operation_id` when permitted. GET=`applied`: do not repeat; authoritative GET=`not_found` and the current brief's guarantee: retry with the same key and payload, preserving permission and preconditions; unavailable GET: handoff/pending. A local fake can demonstrate branches, not validate scopes or actual provider behavior. Require stable key, explicit states, and evidence that one intent does not produce two tickets. Do not suggest raising permissions. Facilitator answers must reproduce the brief's fake contract, not invent different retention, consistency, or key scope. If those conditions are unconfirmed in a variant, accept `unknown` and handoff as valid blocking; do not require retry to pass. Also test same-key/different-payload rejection and concurrent deduplication when claiming that guarantee.
 
-**Cambio al 50%.** El service principal de producción carece también de scope GET para consultar operaciones. Entregar exactamente:
+**50% change.** The production service principal also lacks GET scope for operation queries. Deliver exactly:
 
 ```text
 CAMBIO_AUTORIZADO
 caso: I1
 checkpoint: 50%
 tipo: confirma
-incógnita: ¿Se puede reconciliar el resultado real?
-alcance: reconciliación real
-decisión: Bloquear retry real y comunicar a IT la falta de permiso GET; el candidato no modifica scopes, su autorización y habilitación corresponden a IT. Fake local permitido solo como prueba interna.
+incógnita: Can the actual result be reconciled?
+alcance: real reconciliation
+decisión: Block real retry and inform IT of missing GET permission; the candidate does not modify scopes, whose authorization and enablement belong to IT. A local fake is permitted only as an internal test.
 ```
 
-**Observables:** boundary pequeño, prueba del timeout-aplicado y del bloqueo sin GET, claim exacta del fake, dueño del permiso. **Fallo prioritario:** retry ciego o claim de integración validada solo por fake.
+**Observables:** small boundary, timeout-after-applied and no-GET blocking tests, exact fake claim, permission owner. **Priority failure:** blind retry or claiming validated integration from a fake alone.
 
-## J1 — Journey conversacional
+## J1 — Conversational journey
 
-**Oracle del facilitador.** La secuencia mínima tiene datos de vehículo, cotización vigente ligada a esos datos, confirmación y solicitud de cita. Una corrección material de versión/trim invalida cotización y confirmación anteriores; el sistema debe volver a cotizar o hacer handoff, no reservar con precio stale. Métrica primaria propuesta: citas válidas completadas o aprobadas por humano por cohorte; proxies: tasa de cotización válida, correcciones recuperadas, handoff, abandono, latencia. Containment por sí solo puede empeorar el outcome. Falso positivo: una demo que repite el flujo feliz sin prueba de corrección.
+**Facilitator oracle.** Minimum sequence: vehicle data, current quote bound to that data, confirmation, and appointment request. A material version/trim correction invalidates prior quote and confirmation; requote or handoff, not booking with stale price. Proposed primary metric: valid completed or human-approved appointments per cohort; proxies: valid-quote rate, recovered corrections, handoff, abandonment, latency. Containment alone can worsen outcome. False positive: happy-path-only demo without correction test.
 
-**Cambio al 50%.** El usuario ya aceptó la cotización q1 para los datos v1; antes de confirmar una cita, corrige el trim y los datos pasan a v2. Entregar exactamente:
+**50% change.** The user already accepted q1 for v1 data; before confirming an appointment, they correct the trim, changing data to v2. Deliver exactly:
 
 ```text
 CAMBIO_AUTORIZADO
 caso: J1
 checkpoint: 50%
 tipo: confirma
-incógnita: ¿Sigue vigente la cotización anterior?
-alcance: cotización y confirmación de cita
-decisión: El usuario aceptó q1 para datos v1 y ahora corrige el trim a v2, antes de confirmar una cita. Invalidar q1 y su aceptación; recotizar o hacer handoff, y obtener nueva aceptación antes de continuar. Ninguna reserva real está autorizada.
+incógnita: Is the previous quote still current?
+alcance: quote and appointment confirmation
+decisión: The user accepted q1 for v1 data and now corrects the trim to v2 before confirming an appointment. Invalidate q1 and its acceptance; requote or hand off, and obtain new acceptance before continuing. No real booking is authorized.
 ```
 
-**Variantes locales de cobertura:** (a) corrección tras precio pero antes de aceptación: q1 deja de ser utilizable; (b) datos v1 → q1 → aceptación q1 → corrección material v2: ni q1 ni su aceptación sirven para avanzar, incluso si q2 tiene el mismo precio. Una nueva cotización no hereda el consentimiento anterior. La cita solo puede avanzar localmente con aceptación vigente y confirmación específica, sin efecto externo. Registrar ambas variantes por separado; recotizar no demuestra por sí solo invalidación de aceptación.
+**Local coverage variants:** (a) correction after price but before acceptance: q1 is unusable; (b) v1 data → q1 → q1 acceptance → material v2 correction: neither q1 nor its acceptance allows advancement, even when q2 has the same price. A new quote does not inherit previous consent. The appointment can progress locally only with current acceptance and specific confirmation, without external effect. Record both variants separately; requoting alone does not demonstrate acceptance invalidation.
 
-**Observables:** estado/versionado o regla equivalente, prueba de invalidación de cotización y aceptación ya concedida, consentimiento/efecto antes de booking, medición de calidad y handoff. **Fallo prioritario:** reservar con precio o aprobación anterior.
+**Observables:** state/versioning or equivalent rule, invalidation test for quote and already-granted acceptance, consent/effect before booking, quality measurement and handoff. **Priority failure:** booking with previous price or approval.
 
-## P1 — Incidente de plataforma
+## P1 — Platform incident
 
-**Oracle del facilitador.** La tabla de trazas solo permite hipótesis, no p95 de producción ni causalidad. Comparar segmentos, correlacionar concurrencia con cola del orquestador, pedir/probar un perfil acotado o trace adicional read-only y aislar el cuello antes de cambiar timeout. Mantener workaround del cliente separado del fix compartido, con owner de plataforma, rollout y rollback. La evidencia de un segundo cliente cambia prioridad de generalización, no demuestra una causa única.
+**Facilitator oracle.** The trace table supports hypotheses only, not production p95 or causality. Compare segments, correlate concurrency with orchestrator queue, request/test a bounded profile or extra read-only trace, and isolate the bottleneck before changing timeout. Keep client workaround separate from shared fix, with platform owner, rollout, and rollback. Evidence from a second client changes generalization priority, not proof of one cause.
 
-**Cambio al 50%.** Un segundo cliente presenta el mismo aumento de latencia en la etapa de cola con concurrencia similar. Entregar exactamente:
+**50% change.** A second client shows the same queue-stage latency increase at similar concurrency. Deliver exactly:
 
 ```text
 CAMBIO_AUTORIZADO
 caso: P1
 checkpoint: 50%
 tipo: confirma
-incógnita: ¿El cuello pertenece a la plataforma compartida?
-alcance: triage de plataforma
-decisión: Un segundo cliente presenta aumento de latencia en la etapa de cola con concurrencia similar. Investigar la hipótesis de un cuello compartido, sin darla por demostrada; mantener la mitigación por cliente limitada a análisis o pruebas locales/read-only, sin cambios reales de timeout, escala o configuración.
+incógnita: Does the bottleneck belong to the shared platform?
+alcance: platform triage
+decisión: A second client shows increased queue-stage latency at similar concurrency. Investigate a shared-bottleneck hypothesis without treating it as proven; keep client mitigation limited to analysis or local/read-only tests, with no real timeout, scale, or configuration changes.
 ```
 
-**Observables:** probe discriminante, comparación antes/después y por segmento, contención sin esconder error, handoff con hipótesis frente a hechos. **Fallo prioritario:** subir timeouts y afirmar que se resolvió sin medir.
+**Observables:** discriminating probe, before/after and per-segment comparison, containment without hiding error, hypothesis-versus-fact handoff. **Priority failure:** raising timeouts and claiming resolution without measuring.
